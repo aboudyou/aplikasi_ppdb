@@ -6,7 +6,7 @@
 @section('content')
     <!-- [ Header ] start -->
     <header id="home" class="d-flex align-items-center"
-        style="position: relative; min-height: 100dvh; background: url('{{ asset('assets/images/my/hero-section.png') }}') no-repeat center center; background-size: cover;">
+        style="position: relative; min-height: 100dvh; background: url('{{ asset('assets/images/my/SMK-antartika.jpeg') }}') no-repeat center center; background-size: cover;">
         <!-- Overlay -->
         <div
             style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.1));">
@@ -18,7 +18,7 @@
                     <h1 class="mt-sm-3 text-white mb-4 f-w-600 wow fadeInUp" data-wow-delay="0.2s" style="font-size: 3.5rem;">
                         Selamat Datang di PPDB Online
                         <br>
-                        <span class="text-primary">Sekolah Harapan Bangsa</span>
+                        <span class="text-primary">Sekolah SMK Antartika 1</span>
                     </h1>
                     <h5 class="mb-4 text-white opacity-75 wow fadeInUp" data-wow-delay="0.4s" style="font-size: 1.25rem;">
                         Wujudkan Masa Depan Gemilang Melalui Pendidikan Berkualitas.
@@ -97,7 +97,7 @@
                 <div class="col-md-10 col-xl-6">
                     <h5 class="text-primary mb-0">Proses Cepat & Mudah</h5>
                     <h2 class="my-3">Alur Pendaftaran</h2>
-                    <p class="mb-0">Ikuti 4 langkah mudah untuk menjadi bagian dari keluarga besar Sekolah Harapan Bangsa.
+                    <p class="mb-0">Ikuti 4 langkah mudah untuk menjadi bagian dari keluarga besar Sekolah SMK Antartika 1.
                     </p>
                 </div>
             </div>
@@ -151,7 +151,7 @@
 
     <!-- [ CTA ] start -->
     <section class="cta-block"
-        style="position: relative; padding: 120px 0; background: url('{{ asset('assets/images/my/join-us.png') }}') no-repeat center center; background-size: cover; background-attachment: fixed;">
+        style="position: relative; padding: 120px 0; background: url('{{ asset('assets/images/my/Antartika.jpeg') }}') no-repeat center center; background-size: cover; background-attachment: fixed;">
         <!-- Overlay -->
         <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.6);">
         </div>
@@ -160,8 +160,9 @@
             <div class="row justify-content-center">
                 <div class="col-md-8 text-center">
                     <h2 class="text-white mb-4" style="font-size: 2.8rem; font-weight: 600;">Siap Bergabung dengan <span
-                            class="text-primary">Sekolah Harapan
-                            Bangsa?</span></h2>
+                            class="text-primary">SMK Antartika 1
+                            Sidoarj
+                            o?</span></h2>
                     <p class="text-white opacity-75 mb-4 lead">Pendaftaran akan segera ditutup. Jangan lewatkan
                         kesempatan untuk
                         menjadi siswa berprestasi di sekolah kami. Klik tombol di bawah untuk memulai proses pendaftaran.

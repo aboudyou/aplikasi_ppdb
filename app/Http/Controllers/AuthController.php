@@ -240,7 +240,7 @@ class AuthController extends Controller
         $user = User::updateOrCreate([
             'email' => $socialUser->email,
         ], [
-            'name' => $socialUser->name,
+            'name' => $socialUser->name ?? $socialUser->getNickname(),
             'provider' => $provider,
             'provider_id' => $socialUser->getId(),
             'avatar' => $socialUser->getAvatar(),
