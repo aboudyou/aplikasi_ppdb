@@ -1,4 +1,8 @@
-@extends('layouts.dashboard')
+@php
+    $layout = auth()->user()->role === 'admin' ? 'layouts.dashboard' : 'layouts.app';
+@endphp
+
+@extends($layout)
 
 @section('title', 'My Profile')
 

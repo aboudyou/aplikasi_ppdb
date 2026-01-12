@@ -1,88 +1,66 @@
-<div class="row justify-content-center">
-    <div class="col-12">
-        <div class="card shadow-sm border-0">
-            <div class="card-body text-center">
-                <h2 class="mb-3 text-primary">
-                    Selamat Datang, <span class="fw-bold">{{ Auth::user()->name }}</span>!
-                </h2>
+@extends('layouts.app')
 
-                @if (!$user->is_verified)
-                    <div class="alert alert-warning d-flex align-items-center justify-content-between shadow-sm"
-                        role="alert">
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
-                            <div>
-                                <strong>Email Anda belum terverifikasi.</strong> Silakan verifikasi terlebih dahulu
-                                untuk
-                                mengakses semua fitur.
-                            </div>
-                        </div>
+@section('title', 'Dashboard Siswa')
 
-                        <a href="{{ route('verify.form') }}" id="verify-button"
-                            class="btn btn-warning btn-sm fw-bold">Verifikasi
-                            Sekarang</a>
-                    </div>
-                @endif
-                @if (session('success'))
-                    <div class="alert alert-success">
-                        {{ session('success') }}
-                    </div>
-                @endif
-                <p class="lead mb-4">
-                    Ini adalah <span class="fw-bold text-success">Dashboard</span> kamu untuk memantau progress dan
-                    status terkait <span class="text-info">PPDB</span>.
-                    Silakan gunakan menu di samping untuk mengakses fitur-fitur seperti pendaftaran, pengumuman, dan
-                    lainnya.
-                </p>
-
-                <div class="row mt-4">
-                    <div class="col-md-4 mb-3">
-                        <div class="card border-info h-100">
-                            <div class="card-body">
-                                <i class="bi bi-person-lines-fill fs-2 text-info"></i>
-                                <h5 class="card-title mt-2">Pendaftaran</h5>
-                                <p class="card-text">Cek dan lengkapi data pendaftaran kamu di sini.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card border-success h-100">
-                            <div class="card-body">
-                                <i class="bi bi-bar-chart-line-fill fs-2 text-success"></i>
-                                <h5 class="card-title mt-2">Progress</h5>
-                                <p class="card-text">Pantau status dan tahapan seleksi PPDB.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card border-warning h-100">
-                            <div class="card-body">
-                                <i class="bi bi-megaphone-fill fs-2 text-warning"></i>
-                                <h5 class="card-title mt-2">Pengumuman</h5>
-                                <p class="card-text">Lihat pengumuman terbaru terkait PPDB.</p>
-                            </div>
-                        </div>
-                    </div>
+@section('content')
+<div class="container mt-4">
+    <h3 class="mb-4"><i class="bi bi-speedometer2"></i> Dashboard Siswa</h3>
+    <div class="row g-4">
+        {{-- Biodata --}}
+        <div class="col-md-4">
+            <div class="card mb-3 animate__animated animate__fadeInUp">
+                <div class="card-body text-center">
+                    <i class="bi bi-person-lines-fill dashboard-icon text-primary"></i>
+                    <h5 class="card-title mt-3">Biodata</h5>
+                    <p class="text-muted">Lengkapi data diri kamu</p>
+                    <a href="{{ route('user.biodata') }}" class="btn btn-primary btn-sm">Isi Biodata</a>
                 </div>
-                <a href="/myprofile" class="btn btn-primary mt-4 px-4">
-                    Lihat Profil Saya
-                </a>
+            </div>
+        </div>
+        {{-- Lihat Profil --}}
+        <div class="col-md-4">
+            <div class="card mb-3 animate__animated animate__fadeInUp" style="animation-delay:0.1s;">
+                <div class="card-body text-center">
+                    <i class="bi bi-person-circle dashboard-icon text-info"></i>
+                    <h5 class="card-title mt-3">Profil</h5>
+                    <p class="text-muted">Lihat profil lengkap kamu</p>
+                    <a href="{{ route('user.profile.index') }}" class="btn btn-info btn-sm">Lihat Profil</a>
+                </div>
+            </div>
+        </div>
+        {{-- Upload Dokumen --}}
+        <div class="col-md-4">
+            <div class="card mb-3 animate__animated animate__fadeInUp" style="animation-delay:0.2s;">
+                <div class="card-body text-center">
+                    <i class="bi bi-upload dashboard-icon text-success"></i>
+                    <h5 class="card-title mt-3">Upload Dokumen</h5>
+                    <p class="text-muted">Unggah berkas persyaratan</p>
+                    <a href="{{ route('user.dokumen.index') }}" class="btn btn-success btn-sm">Upload</a>
+                </div>
+            </div>
+        </div>
+        {{-- Status Seleksi --}}
+        <div class="col-md-4">
+            <div class="card mb-3 animate__animated animate__fadeInUp" style="animation-delay:0.3s;">
+                <div class="card-body text-center">
+                    <i class="bi bi-check2-circle dashboard-icon text-warning"></i>
+                    <h5 class="card-title mt-3">Status Seleksi</h5>
+                    <p class="text-muted">Lihat hasil seleksi kamu</p>
+                    <a href="{{ route('user.status') }}" class="btn btn-warning btn-sm">Cek Status</a>
+                </div>
+            </div>
+        </div>
+        {{-- Pembayaran PPDB --}}
+        <div class="col-md-4">
+            <div class="card mb-3 animate__animated animate__fadeInUp" style="animation-delay:0.4s;">
+                <div class="card-body text-center">
+                    <i class="bi bi-credit-card dashboard-icon text-danger"></i>
+                    <h5 class="card-title mt-3">Pembayaran</h5>
+                    <p class="text-muted">Upload bukti pembayaran biaya pendaftaran</p>
+                    <a href="{{ route('user.pembayaran') }}" class="btn btn-danger btn-sm">Bayar</a>
+                </div>
             </div>
         </div>
     </div>
 </div>
-<script>
-    // Script to handle the verification button click state
-    const verifyButton = document.getElementById('verify-button');
-
-    if (verifyButton) {
-        verifyButton.addEventListener('click', function() {
-            // Disable the button and show processing text
-            this.classList.add('disabled');
-            this.innerHTML = `
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                Processing...
-            `;
-        });
-    }
-</script>
+@endsection

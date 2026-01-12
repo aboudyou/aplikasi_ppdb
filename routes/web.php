@@ -1,107 +1,205 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
+// =======================
+// AUTH
+// =======================
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\AdminController;
+// use App\Http\Controllers\Auth\SSOController;
+
+// =======================
+// DASHBOARD
+// =======================
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+
+// =======================
+// ADMIN CONTROLLER
+// =======================
+use App\Http\Controllers\Admin\VerifikasiController;
+use App\Http\Controllers\Admin\VerifikasiPembayaranController;
+use App\Http\Controllers\Admin\SeleksiController as AdminSeleksiController;
+use App\Http\Controllers\Admin\PengumumanController as AdminPengumumanController;
+use App\Http\Controllers\Admin\LaporanController;
+use App\Http\Controllers\Admin\GelombangController;
+
+// =======================
+// USER CONTROLLER
+// =======================
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BiodataController;
+use App\Http\Controllers\Siswa\FormulirController;
+use App\Http\Controllers\Siswa\SiswaDokumenController;
+use App\Http\Controllers\Siswa\PembayaranController;
+use App\Http\Controllers\Siswa\SeleksiController;
+use App\Http\Controllers\StatusSeleksiController;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - Aplikasi PPDB Online
+| HOMEPAGE
 |--------------------------------------------------------------------------
 */
+Route::get('/', fn () => view('welcome'))->name('home');
+Route::view('/contact-us', 'contact')->name('contact');
 
-// =========================
-// 📌 ROUTE UMUM
-// =========================
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+/*
+|--------------------------------------------------------------------------
+| DASHBOARD REDIRECT
+|--------------------------------------------------------------------------
+*/
+Route::get('/dashboard', function () {
+    if (!auth()->check()) {
+        return redirect()->route('login');
+    }
 
-Route::get('/contact-us', function () {
-    return view('contact');
-})->name('contact');
+    return auth()->user()->role === 'admin'
+        ? redirect()->route('admin.dashboard')
+        : redirect()->route('user.dashboard');
+})->name('dashboard');
 
-// =========================
-// 📩 ROUTE OTP / VERIFIKASI EMAIL
-// =========================
-Route::get('/verify-email', [AuthController::class, 'showVerifyForm'])->name('verify.form');
-Route::post('/send-otp', [AuthController::class, 'sendOtp'])->name('send.otp');
-Route::post('/verify-email', [AuthController::class, 'verify'])->name('verify.otp');
+/*
+|--------------------------------------------------------------------------
+| AUTH (GUEST)
+|--------------------------------------------------------------------------
+*/
+Route::middleware('guest')->group(function () {
+    Route::controller(AuthController::class)->group(function () {
+        Route::get('/login', 'showLoginForm')->name('login');
+        Route::post('/login', 'login')->name('login.post');
 
-// =========================
-// 🔐 ROUTE UNTUK TAMU (BELUM LOGIN)
-// =========================
-Route::middleware(['guest'])->group(function () {
+        Route::get('/register', 'showRegistrationForm')->name('register');
+        Route::post('/register', 'register')->name('register.post');
 
-    // Login & Register
-    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+        Route::get('/forgot-password', 'showRequestForm')->name('forgot_password.email_form');
+        Route::post('/forgot-password', 'sendResetLink')->name('forgot_password.send_link');
 
-    Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
-    Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+        Route::get('/password-reset/{token}', 'showResetForm')->name('password.reset');
+        Route::post('/password-reset', 'resetPassword')->name('password.update');
+    });
 
-    // SSO (Google, Facebook, dll)
-    Route::get('/auth/{provider}', [AuthController::class, 'redirect'])->name('sso.redirect');
-    Route::get('/auth/{provider}/callback', [AuthController::class, 'callback'])->name('sso.callback');
-
-    // Forgot & Reset Password
-    Route::get('/forgot-password', [AuthController::class, 'showRequestForm'])->name('forgot_password.email_form');
-    Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('forgot_password.send_link');
-
-    Route::get('/password-reset/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
-    Route::post('/password-reset', [AuthController::class, 'resetPassword'])->name('password.update');
+    // SSO (disabled - controller not yet created)
+    // Route::controller(SSOController::class)->group(function () {
+    //     Route::get('/auth/{provider}/redirect', 'redirect')->name('sso.redirect');
+    //     Route::get('/auth/{provider}/callback', 'callback')->name('sso.callback');
+    // });
 });
 
-// =========================
-// 🧑‍💼 ROUTE UNTUK USER YANG SUDAH LOGIN
-// =========================
-Route::middleware(['auth', 'web'])->group(function () {
-
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+/*
+|--------------------------------------------------------------------------
+| PROTECTED (AUTH REQUIRED)
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth')->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    Route::get('/myprofile', function () {
-        return view('myprofile');
-    })->name('myprofile');
+    // ===== PROFILE USER (untuk edit data Profil) =====
+    // Tidak ada GET /myprofile lagi, cukup ini saja
+    // Dipindahkan ke dalam user area
 
-    // =========================
-    // 👑 ADMIN ROUTES
-    // =========================
-    Route::prefix('admin')->middleware(['cekRole:admin'])->group(function () {
-        Route::get('/verifikasi', [AdminController::class, 'verifikasi'])->name('admin.verifikasi');
-        Route::get('/seleksi', [AdminController::class, 'seleksi'])->name('admin.seleksi');
-        Route::get('/pengumuman', [AdminController::class, 'pengumuman'])->name('admin.pengumuman');
-        Route::get('/laporan', [AdminController::class, 'laporan'])->name('admin.laporan');
-    });
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN AREA
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('admin')
+        ->middleware('cekRole:admin')
+        ->name('admin.')
+        ->group(function () {
 
-    // =========================
-    // 🙋 USER ROUTES
-    // =========================
-Route::prefix('user')->middleware(['cekRole:user'])->group(function () {
+            // Dashboard
+            Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-    // Biodata
-    Route::get('/biodata', [UserController::class, 'biodata'])->name('user.biodata');
-    Route::post('/biodata', [UserController::class, 'simpanBiodata'])->name('user.biodata.store');
+            // VERIFIKASI
+            Route::prefix('verifikasi')->name('verifikasi.')->group(function () {
+                Route::get('/', [VerifikasiController::class, 'index'])->name('index');
+                Route::get('/{id}', [VerifikasiController::class, 'show'])->name('show');
+                Route::post('/{id}/approve', [VerifikasiController::class, 'approve'])->name('approve');
+                Route::post('/{id}/reject', [VerifikasiController::class, 'reject'])->name('reject');
+            });
 
-    // Dokumen
-    Route::get('/dokumen', [UserController::class, 'dokumen'])->name('user.dokumen');
+            // SELEKSI
+            Route::prefix('seleksi')->name('seleksi.')->group(function () {
+                Route::get('/', [AdminSeleksiController::class, 'index'])->name('index');
+                Route::post('/{id}', [AdminSeleksiController::class, 'update'])->name('update');
+            });
 
-    // Status
-    Route::get('/status', [UserController::class, 'status'])->name('user.status');
+            // PEMBAYARAN (VERIFIKASI PEMBAYARAN OLEH ADMIN)
+            Route::prefix('pembayaran')->name('pembayaran.')->group(function () {
+                Route::get('/', [VerifikasiPembayaranController::class, 'index'])->name('index');
+                Route::get('/{id}', [VerifikasiPembayaranController::class, 'show'])->name('show');
+                Route::post('/{id}/approve', [VerifikasiPembayaranController::class, 'approve'])->name('approve');
+                Route::post('/{id}/reject', [VerifikasiPembayaranController::class, 'reject'])->name('reject');
+            });
 
-    // Daftar Ulang
-    Route::get('/daftar-ulang', [UserController::class, 'daftarUlang'])->name('user.daftar_ulang');
-});
+            // PENGUMUMAN
+            Route::prefix('pengumuman')->name('pengumuman.')->group(function () {
+                Route::get('/', [AdminPengumumanController::class, 'index'])->name('index');
+                Route::get('/create', [AdminPengumumanController::class, 'create'])->name('create');
+                Route::post('/', [AdminPengumumanController::class, 'store'])->name('store');
+                Route::delete('/{id}', [AdminPengumumanController::class, 'destroy'])->name('destroy');
+            });
 
-});
+            // LAPORAN
+            Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+            Route::get('/laporan/export-csv', [LaporanController::class, 'exportCsv'])->name('laporan.export.csv');
 
-// =========================
-// ⚠️ ROUTE FALLBACK (404)
-// =========================
-Route::fallback(function () {
-    return response()->view('errors.404', [], 404);
+            // GELOMBANG
+            Route::prefix('gelombang')->name('gelombang.')->group(function () {
+                Route::get('/', [GelombangController::class, 'index'])->name('index');
+                Route::get('/create', [GelombangController::class, 'create'])->name('create');
+                Route::post('/', [GelombangController::class, 'store'])->name('store');
+                Route::get('/{id}/edit', [GelombangController::class, 'edit'])->name('edit');
+                Route::put('/{id}', [GelombangController::class, 'update'])->name('update');
+                Route::delete('/{id}', [GelombangController::class, 'destroy'])->name('destroy');
+            });
+        });
+
+    /*
+    |--------------------------------------------------------------------------
+    | USER AREA
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('user')
+        ->middleware('cekRole:user')
+        ->name('user.')
+        ->group(function () {
+
+            Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
+
+            // BIODATA
+            Route::get('/biodata', [UserController::class, 'biodata'])->name('biodata');
+            Route::post('/biodata/save', [UserController::class, 'storeBiodata'])->name('biodata.save');
+
+            // PROFILE
+            Route::get('/profile', [BiodataController::class, 'index'])->name('profile.index');
+            Route::get('/profile/edit', [BiodataController::class, 'edit'])->name('profile.edit');
+            Route::put('/profile', [BiodataController::class, 'update'])->name('profile.update');
+
+            // FORMULIR
+            Route::resource('/formulir', FormulirController::class);
+
+            // DOKUMEN
+            Route::get('/dokumen', [SiswaDokumenController::class, 'index'])->name('dokumen.index');
+            Route::post('/dokumen/upload', [SiswaDokumenController::class, 'store'])->name('dokumen.store');
+            Route::delete('/dokumen/{id}', [SiswaDokumenController::class, 'destroy'])->name('dokumen.destroy');
+
+            // PEMBAYARAN
+            Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran');
+            Route::post('/pembayaran/upload', [PembayaranController::class, 'store'])->name('pembayaran.upload');
+
+            // STATUS SELEKSI
+            Route::get('/status', [StatusSeleksiController::class, 'index'])->name('status');
+            Route::get('/seleksi', [SeleksiController::class, 'index'])->name('seleksi');
+
+            // DAFTAR ULANG
+            Route::get('/daftar-ulang', [UserController::class, 'daftarUlang'])->name('daftar_ulang');
+
+            // Pengumuman untuk user
+            Route::get('/pengumuman', [\App\Http\Controllers\UserPengumumanController::class, 'index'])->name('pengumuman');
+        });
+
+    // (Route pengumuman-saya dihapus, gunakan /user/pengumuman)
+
 });

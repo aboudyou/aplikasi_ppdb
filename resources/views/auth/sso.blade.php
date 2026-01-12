@@ -1,3 +1,4 @@
+ @if (Route::has('sso.redirect'))
  <div class="row">
      <div class="col-6">
          <div class="d-grid">
@@ -19,3 +20,4 @@
      </div>
 
  </div>
+@endif

@@ -9,7 +9,7 @@ class Biodata extends Model
 {
     use HasFactory;
 
-    protected $table = 'biodata'; // pastikan baris ini ada dan tanpa huruf 's'
+    // Tidak perlu mendefinisikan $table kalau nama tabelnya mengikuti konvensi (biodatas)
 
     protected $fillable = [
         'user_id',
@@ -19,6 +19,10 @@ class Biodata extends Model
         'alamat',
     ];
 
+    /**
+     * Relasi ke tabel users
+     * Setiap biodata dimiliki oleh satu user
+     */
     public function user()
     {
         return $this->belongsTo(User::class);

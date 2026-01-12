@@ -11,10 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('otp_code')->nullable();
-            $table->dateTime('otp_expires_at')->nullable();
-            $table->boolean('is_verified')->default(false);
+        Schema::table('formulir_pendaftaran', function (Blueprint $table) {
+            $table->string('foto')->nullable()->after('nomor_pendaftaran');
         });
     }
 
@@ -23,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['otp_code', 'otp_expires_at', 'is_verified']);
+        Schema::table('formulir_pendaftaran', function (Blueprint $table) {
+            $table->dropColumn('foto');
         });
     }
 };

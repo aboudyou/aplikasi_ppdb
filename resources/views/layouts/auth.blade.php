@@ -47,16 +47,15 @@
         </div>
         <!-- [ Pre-loader ] End -->
 
-        <div class="auth-main">
-            <div class="auth-wrapper v3">
-                <div class="auth-form"
-                    style="background-image: url({{ asset('assets/images/my/logo-antartika.png') }});background-size:cover;">
-                    <div class="auth-header">
+        <div class="auth-main" style="min-height:100vh; background: linear-gradient(135deg, #3b82f6 0%, #f59e0b 100%); display:flex; align-items:center; justify-content:center;">
+            <div class="auth-wrapper v3" style="width:92%; max-width:680px; margin:auto;">
+                <div class="auth-form animate__animated animate__fadeInDown" style="background: rgba(255,255,255,0.95); border-radius: 24px; box-shadow: 0 10px 36px rgba(59,130,246,0.12), 0 4px 12px rgba(245,158,11,0.10); padding:3rem 2.5rem;">
+                    <div class="auth-header text-center mb-4">
                         <a class="navbar-brand" href="/">
-                            <img width="100" src="{{ asset('assets/images/my/logo-antartika.png') }}" alt="logo">
+                            <img width="80" src="{{ asset('assets/images/my/logo-antartika.png') }}" alt="logo" style="border-radius:16px; box-shadow:0 2px 8px rgba(59,130,246,0.12);">
                         </a>
+                        <div style="font-size:2rem; font-weight:700; margin-top:1rem; background: linear-gradient(90deg, #3b82f6 0%, #f59e0b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">PPDB Online</div>
                     </div>
-
                     @yield('content')
 
                     <div class="auth-footer row">
