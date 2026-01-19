@@ -20,6 +20,7 @@ class OrangTua extends Model
         'alamat_ayah',
         'no_hp_ayah',
         'nik_ayah',
+        'pendidikan_ayah',
         'nama_ibu',
         'tanggal_lahir_ibu',
         'pekerjaan_ibu',
@@ -27,6 +28,7 @@ class OrangTua extends Model
         'alamat_ibu',
         'no_hp_ibu',
         'nik_ibu',
+        'pendidikan_ibu',
         'nama_wali',
         'tanggal_lahir_wali',
         'pekerjaan_wali',
@@ -34,6 +36,7 @@ class OrangTua extends Model
         'alamat_wali',
         'no_hp_wali',
         'nik_wali',
+        'pendidikan_wali',
     ];
 
     public function formulir()

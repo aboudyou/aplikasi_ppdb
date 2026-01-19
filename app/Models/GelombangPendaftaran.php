@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class GelombangPendaftaran extends Model
 {
+    use HasFactory;
+
     protected $table = 'gelombang_pendaftaran';
     protected $fillable = ['nama_gelombang', 'tanggal_mulai', 'tanggal_selesai', 'nilai', 'kuota_maksimal', 'jenis_promo', 'nilai_promo', 'tipe_nilai_promo', 'catatan', 'keterangan'];
 

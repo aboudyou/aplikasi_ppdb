@@ -3,6 +3,11 @@
     <span class="pc-mtext">Isi Biodata</span></a>
 </li>
 
+<li class="pc-item"><a href="{{ route('user.orangtua') }}" class="pc-link">
+    <span class="pc-micon"><i class="ti ti-users"></i></span>
+    <span class="pc-mtext">Data Orang Tua</span></a>
+</li>
+
 <li class="pc-item"><a href="{{ route('user.dokumen.index') }}" class="pc-link">
     <span class="pc-micon"><i class="ti ti-upload"></i></span>
     <span class="pc-mtext">Upload Dokumen</span></a>

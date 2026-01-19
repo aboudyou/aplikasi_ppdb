@@ -9,10 +9,10 @@
         <div class="card p-4">
             <h5>
                 Status:
-                @if ($status->status_pendaftaran == 'Diterima')
-                    <span class="badge bg-success">{{ $status->status_pendaftaran }}</span>
-                @elseif ($status->status_pendaftaran == 'Ditolak')
-                    <span class="badge bg-danger">{{ $status->status_pendaftaran }}</span>
+                @if ($status->status_pendaftaran == 'diterima')
+                    <span class="badge bg-success">Diterima</span>
+                @elseif ($status->status_pendaftaran == 'ditolak')
+                    <span class="badge bg-danger">Ditolak</span>
                 @elseif ($status->status_pendaftaran == 'pending')
                     <span class="badge bg-secondary">Menunggu Verifikasi</span>
                 @else

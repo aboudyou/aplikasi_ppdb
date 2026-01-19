@@ -34,43 +34,55 @@
         <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" id="main-style-link">
         <link rel="stylesheet" href="{{ asset('assets/css/style-preset.css') }}">
 
+        <style>
+        body, html {
+            background-color: #bfdbfe !important;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+            padding: 0.75rem 1rem;
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0a58ca;
+        }
+        </style>
+
     </head>
     <!-- [Head] end -->
     <!-- [Body] Start -->
 
     <body>
-        <!-- [ Pre-loader ] start -->
-        <div class="loader-bg">
+        <!-- [ Pre-loader ] disabled for smooth loading -->
+        <div class="loader-bg" style="display: none;">
             <div class="loader-track">
                 <div class="loader-fill"></div>
             </div>
         </div>
         <!-- [ Pre-loader ] End -->
 
-        <div class="auth-main" style="min-height:100vh; background: linear-gradient(135deg, #3b82f6 0%, #f59e0b 100%); display:flex; align-items:center; justify-content:center;">
-            <div class="auth-wrapper v3" style="width:92%; max-width:680px; margin:auto;">
-                <div class="auth-form animate__animated animate__fadeInDown" style="background: rgba(255,255,255,0.95); border-radius: 24px; box-shadow: 0 10px 36px rgba(59,130,246,0.12), 0 4px 12px rgba(245,158,11,0.10); padding:3rem 2.5rem;">
-                    <div class="auth-header text-center mb-4">
-                        <a class="navbar-brand" href="/">
-                            <img width="80" src="{{ asset('assets/images/my/logo-antartika.png') }}" alt="logo" style="border-radius:16px; box-shadow:0 2px 8px rgba(59,130,246,0.12);">
-                        </a>
-                        <div style="font-size:2rem; font-weight:700; margin-top:1rem; background: linear-gradient(90deg, #3b82f6 0%, #f59e0b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">PPDB Online</div>
+        <div class="auth-main" style="min-height:100vh;">
+            <div class="auth-wrapper" style="width:100%; margin:auto;">
+                <div class="auth-form" style="background: transparent; border: none; box-shadow: none;">
+                    <div class="auth-header text-center mb-4" style="padding:0;">
+                        <!-- Header removed for cleaner login page -->
                     </div>
                     @yield('content')
 
-                    <div class="auth-footer row">
-                        <!-- <div class=""> -->
-                        <div class="col my-1">
-                            <p class="m-0">Copyright © <a href="#">Codedthemes</a></p>
-                        </div>
-                        <div class="col-auto my-1">
-                            <ul class="list-inline footer-link mb-0">
-                                <li class="list-inline-item"><a href="#">Home</a></li>
-                                <li class="list-inline-item"><a href="#">Privacy Policy</a></li>
-                                <li class="list-inline-item"><a href="#">Contact us</a></li>
-                            </ul>
-                        </div>
-                        <!-- </div> -->
+                    <div class="auth-footer text-center" style="padding:0;">
+                        <!-- Footer removed for cleaner login page -->
                     </div>
                 </div>
             </div>

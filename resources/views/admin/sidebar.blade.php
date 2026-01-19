@@ -40,6 +40,13 @@
     </a>
 </li>
 
+<li class="pc-item {{ request()->routeIs('admin.jurusan.*') ? 'active' : '' }}">
+    <a href="{{ route('admin.jurusan.index') }}" class="pc-link">
+        <span class="pc-micon"><i class="ti ti-book"></i></span>
+        <span class="pc-mtext">Jurusan</span>
+    </a>
+</li>
+
 <li class="pc-item {{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}">
     <a href="{{ route('admin.laporan.index') }}" class="pc-link">
         <span class="pc-micon"><i class="ti ti-report"></i></span>

@@ -79,6 +79,7 @@
                     <div class="d-grid gap-1">
                         <a href="{{ route('admin.seleksi.index') }}" class="btn btn-primary btn-sm">Seleksi</a>
                         <a href="{{ route('admin.verifikasi.index') }}" class="btn btn-info btn-sm">Verifikasi</a>
+                        <a href="{{ route('admin.jurusan.index') }}" class="btn btn-success btn-sm">Kelola Jurusan</a>
                     </div>
                 </div>
             </div>
@@ -107,6 +108,23 @@
             @else
                 <p class="text-center text-muted">Belum ada pendaftar terbaru.</p>
             @endif
+        </div>
+    </div>
+
+    {{-- Quick Links --}}
+    <div class="card mt-4" data-aos="fade-up">
+        <div class="card-header">
+            <h5><i class="bi bi-link"></i> Quick Links</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 mb-2">
+                    <a href="{{ route('admin.log_aktivitas.index') }}" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-activity"></i> Log Aktivitas
+                    </a>
+                </div>
+                <!-- Tambahkan link lain jika perlu -->
+            </div>
         </div>
     </div>
 </div>

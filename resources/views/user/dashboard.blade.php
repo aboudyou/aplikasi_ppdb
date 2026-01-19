@@ -28,6 +28,17 @@
                 </div>
             </div>
         </div>
+        {{-- Data Orang Tua --}}
+        <div class="col-md-4">
+            <div class="card mb-3 animate__animated animate__fadeInUp" style="animation-delay:0.15s;">
+                <div class="card-body text-center">
+                    <i class="bi bi-people dashboard-icon text-secondary"></i>
+                    <h5 class="card-title mt-3">Data Orang Tua</h5>
+                    <p class="text-muted">Isi data ayah, ibu, dan wali</p>
+                    <a href="{{ route('user.orangtua') }}" class="btn btn-secondary btn-sm">Isi Data</a>
+                </div>
+            </div>
+        </div>
         {{-- Upload Dokumen --}}
         <div class="col-md-4">
             <div class="card mb-3 animate__animated animate__fadeInUp" style="animation-delay:0.2s;">

@@ -126,7 +126,13 @@
                             <div class="col-md-6 mb-2">
                                 <label class="text-muted small">Status</label>
                                 <p class="mb-0">
-                                    <span class="badge bg-warning">{{ $biodata->status_pendaftaran }}</span>
+                                    @if($biodata->status_pendaftaran == 'diterima')
+                                        <span class="badge bg-success">Diterima</span>
+                                    @elseif($biodata->status_pendaftaran == 'ditolak')
+                                        <span class="badge bg-danger">Ditolak</span>
+                                    @else
+                                        <span class="badge bg-warning">{{ $biodata->status_pendaftaran }}</span>
+                                    @endif
                                 </p>
                             </div>
                         </div>

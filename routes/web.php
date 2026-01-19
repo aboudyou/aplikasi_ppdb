@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 // AUTH
 // =======================
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\OrangTuaController;
 // use App\Http\Controllers\Auth\SSOController;
 
 // =======================
@@ -23,6 +24,8 @@ use App\Http\Controllers\Admin\SeleksiController as AdminSeleksiController;
 use App\Http\Controllers\Admin\PengumumanController as AdminPengumumanController;
 use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\Admin\GelombangController;
+use App\Http\Controllers\Admin\JurusanController;
+use App\Http\Controllers\LogAktivitasController;
 
 // =======================
 // USER CONTROLLER
@@ -66,13 +69,18 @@ Route::get('/dashboard', function () {
 Route::middleware('guest')->group(function () {
     Route::controller(AuthController::class)->group(function () {
         Route::get('/login', 'showLoginForm')->name('login');
-        Route::post('/login', 'login')->name('login.post');
+        Route::post('/login', 'login')->middleware('throttle:5,1')->name('login.post');
 
         Route::get('/register', 'showRegistrationForm')->name('register');
         Route::post('/register', 'register')->name('register.post');
 
         Route::get('/forgot-password', 'showRequestForm')->name('forgot_password.email_form');
         Route::post('/forgot-password', 'sendResetLink')->name('forgot_password.send_link');
+        
+        // Routes untuk OTP forgot password
+        Route::get('/forgot-password/otp', 'showOtpForm')->name('forgot_password.otp_form');
+        Route::post('/forgot-password/otp/verify', 'verifyOtpForgotPassword')->name('forgot_password.verify_otp');
+        Route::post('/forgot-password/otp/resend', 'resendOtpForgotPassword')->name('forgot_password.resend_otp');
 
         Route::get('/password-reset/{token}', 'showResetForm')->name('password.reset');
         Route::post('/password-reset', 'resetPassword')->name('password.update');
@@ -154,6 +162,19 @@ Route::middleware('auth')->group(function () {
                 Route::put('/{id}', [GelombangController::class, 'update'])->name('update');
                 Route::delete('/{id}', [GelombangController::class, 'destroy'])->name('destroy');
             });
+
+            // JURUSAN
+            Route::prefix('jurusan')->name('jurusan.')->group(function () {
+                Route::get('/', [JurusanController::class, 'index'])->name('index');
+                Route::get('/create', [JurusanController::class, 'create'])->name('create');
+                Route::post('/', [JurusanController::class, 'store'])->name('store');
+                Route::get('/{id}/edit', [JurusanController::class, 'edit'])->name('edit');
+                Route::put('/{id}', [JurusanController::class, 'update'])->name('update');
+                Route::delete('/{id}', [JurusanController::class, 'destroy'])->name('destroy');
+            });
+
+            // LOG AKTIVITAS
+            Route::get('/log-aktivitas', [LogAktivitasController::class, 'index'])->name('log_aktivitas.index');
         });
 
     /*
@@ -171,6 +192,10 @@ Route::middleware('auth')->group(function () {
             // BIODATA
             Route::get('/biodata', [UserController::class, 'biodata'])->name('biodata');
             Route::post('/biodata/save', [UserController::class, 'storeBiodata'])->name('biodata.save');
+
+            // ORANG TUA
+            Route::get('/orangtua', [OrangTuaController::class, 'index'])->name('orangtua');
+            Route::post('/orangtua/save', [OrangTuaController::class, 'store'])->name('orangtua.save');
 
             // PROFILE
             Route::get('/profile', [BiodataController::class, 'index'])->name('profile.index');
