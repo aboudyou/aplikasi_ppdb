@@ -40,6 +40,7 @@ class FormulirPendaftaran extends Model
 
     'status_pendaftaran',
     'status_berkas',
+    'catatan_berkas',
     'status_seleksi',
     'nilai_rata',
 ];

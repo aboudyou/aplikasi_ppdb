@@ -9,7 +9,7 @@ class BiodataUser extends Model
 {
     use HasFactory;
 
-    protected $table = 'biodata_user'; // sesuaikan dengan nama tabelmu
+    protected $table = 'biodata_users'; // sesuaikan dengan nama tabelmu
     protected $fillable = [
         'user_id',
         'nama_lengkap',

@@ -86,4 +86,19 @@ class PembayaranController extends Controller
 
         return back()->with('success', 'Bukti pembayaran berhasil diupload. Menunggu verifikasi admin.');
     }
+
+    public function kuitansi()
+    {
+        $formulir = FormulirPendaftaran::where('user_id', Auth::id())->first();
+        if (!$formulir) {
+            return back()->with('error', 'Lengkapi biodata/formulir terlebih dahulu.');
+        }
+
+        $pembayaran = Pembayaran::where('formulir_id', $formulir->id)->first();
+        if (!$pembayaran || $pembayaran->status != 'Lunas') {
+            return back()->with('error', 'Pembayaran belum lunas atau tidak ditemukan.');
+        }
+
+        return view('user.pembayaran.kuitansi', compact('pembayaran'));
+    }
 }

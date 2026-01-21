@@ -85,46 +85,92 @@
             @endif
 
             @if($pembayaran->status != 'Lunas')
-                <hr>
-                <div class="alert alert-info">
+                <div class="alert alert-info mt-3">
                     <strong>Catatan:</strong> Silakan upload ulang bukti pembayaran jika diperlukan.
-                </div>
-            @else
-                <div class="alert alert-success">
-                    <strong>Terima kasih!</strong> Pembayaran Anda telah diverifikasi dan diterima.
                 </div>
             @endif
         @endif
 
-
         <hr>
 
-        @if($formulir && ($formulir->gelombang && $formulir->gelombang->nilai && $formulir->gelombang->nilai > 0))
-            <div class="alert alert-info">
-                <strong>Jumlah yang Harus Dibayarkan:</strong>
-                <h4 class="text-primary mt-2">Rp {{ number_format($formulir->gelombang->getBiayaAkhir(), 0, ',', '.') }}</h4>
+        @if($pembayaran && $pembayaran->status == 'Lunas')
+            <!-- Jika sudah lunas, tampilkan status seperti di dashboard -->
+            <div class="card border-success mb-3">
+                <div class="card-header bg-success text-white">
+                    <h6 class="mb-0">Status Pembayaran</h6>
+                </div>
+                <div class="card-body text-center">
+                    <i class="bi bi-check-circle" style="font-size: 2.5rem; color: #28a745;"></i>
+                    <h5 class="card-title mt-3">Pembayaran</h5>
+                    <p class="text-muted"><strong>Sudah Lunas</strong></p>
+                    
+                    <div class="alert alert-success mt-3 mb-3">
+                        <p class="mb-1">Jumlah yang telah dibayarkan:</p>
+                        <h5 class="text-success mb-0"><strong>Rp {{ number_format($formulir->gelombang->getBiayaAkhir(), 0, ',', '.') }}</strong></h5>
+                    </div>
+                    
+                    <small class="text-muted d-block mb-3">Pembayaran Anda telah diverifikasi dan diterima. Terima kasih!</small>
+                    
+                    <div class="d-flex gap-2 justify-content-center flex-wrap">
+                        <a href="{{ route('user.pembayaran.kuitansi') }}" class="btn btn-primary btn-sm" target="_blank">
+                            <i class="bi bi-file-earmark-pdf"></i> Cetak Kuitansi
+                        </a>
+                        <a href="{{ route('user.dashboard') }}" class="btn btn-success btn-sm">
+                            <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
+                        </a>
+                    </div>
+                </div>
             </div>
 
-            <form id="pembayaranForm" action="{{ route('user.pembayaran.upload') }}" method="POST" enctype="multipart/form-data">
-                @csrf
+        @else
+            <!-- Jika belum lunas, tampilkan form upload -->
+            @if($pembayaran && $pembayaran->status == 'Menunggu')
+                <div class="alert alert-warning mb-3">
+                    <strong>⏳ Menunggu Verifikasi</strong>
+                    <p class="mb-0">Bukti pembayaran Anda sedang diverifikasi oleh admin. Silakan menunggu atau upload ulang jika diperlukan.</p>
+                </div>
+            @elseif($pembayaran && $pembayaran->status == 'Ditolak')
+                <div class="alert alert-danger mb-3">
+                    <strong>❌ Pembayaran Ditolak</strong>
+                    <p class="mb-0">Bukti pembayaran Anda tidak valid. Silakan upload ulang dengan bukti yang sesuai.</p>
+                </div>
+            @endif
 
-                <label>Metode Pembayaran</label>
-                <select id="metodeSelect" name="metode" class="form-control mb-3" required>
-                    <option value="">Pilih Metode</option>
-                    <option>Transfer Bank</option>
-                    <option>QRIS</option>
-                    <option>Cash</option>
-                </select>
+            @if($formulir && ($formulir->gelombang && $formulir->gelombang->nilai && $formulir->gelombang->nilai > 0))
+                <div class="card border-primary mb-3">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0">Form Pembayaran</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info mb-3">
+                            <strong>Jumlah yang Harus Dibayarkan:</strong>
+                            <h4 class="text-primary mt-2 mb-0">Rp {{ number_format($formulir->gelombang->getBiayaAkhir(), 0, ',', '.') }}</h4>
+                        </div>
 
-                <label>Upload Bukti Pembayaran</label>
-                <input type="file" id="buktiInput" name="bukti" class="form-control mb-3" required>
+                        <form id="pembayaranForm" action="{{ route('user.pembayaran.upload') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
 
-                <button class="btn btn-primary">Upload Pembayaran</button>
-            </form>
-        @elseif($formulir)
-            <div class="alert alert-warning">
-                <strong>Perhatian:</strong> Biaya pendaftaran belum ditentukan oleh admin. Silakan hubungi admin untuk mengatur biaya gelombang.
-            </div>
+                            <label class="form-label"><strong>Metode Pembayaran</strong></label>
+                            <select id="metodeSelect" name="metode" class="form-control mb-3" required>
+                                <option value="">Pilih Metode</option>
+                                <option>Transfer Bank</option>
+                                <option>QRIS</option>
+                                <option>Cash</option>
+                            </select>
+
+                            <label class="form-label"><strong>Upload Bukti Pembayaran</strong></label>
+                            <input type="file" id="buktiInput" name="bukti" class="form-control mb-3" required accept="image/*,.pdf">
+                            <small class="text-muted d-block mb-3">Format: JPG, PNG, PDF (Maks. 5MB)</small>
+
+                            <button class="btn btn-primary w-100">Upload Pembayaran</button>
+                        </form>
+                    </div>
+                </div>
+            @elseif($formulir)
+                <div class="alert alert-warning">
+                    <strong>⚠️ Perhatian:</strong> Biaya pendaftaran belum ditentukan oleh admin. Silakan hubungi admin untuk mengatur biaya gelombang.
+                </div>
+            @endif
         @endif
 
         <script>

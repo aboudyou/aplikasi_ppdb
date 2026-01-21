@@ -25,12 +25,28 @@ class SiswaDokumenController extends Controller
         $request->validate([
             'nama_dokumen' => 'required',
             'file' => 'required|mimes:jpg,jpeg,png,pdf|max:2048',
+        ], [
+            'nama_dokumen.required' => 'Nama dokumen harus dipilih',
+            'file.required' => 'File harus diunggah',
+            'file.mimes' => 'Tipe file harus: JPG, JPEG, PNG, atau PDF',
+            'file.max' => 'Ukuran file maksimal 2MB',
         ]);
 
         // Pastikan user sudah mengisi biodata (formulir)
         $form = FormulirPendaftaran::where('user_id', auth()->id())->first();
         if (!$form) {
             return back()->with('error', 'Lengkapi biodata/formulir terlebih dahulu sebelum mengunggah dokumen.');
+        }
+
+        // Cek apakah dokumen dengan nama yang sama sudah ada
+        $exists = Document::where('formulir_id', $form->id)
+                         ->where('jenis_dokumen', $request->nama_dokumen)
+                         ->exists();
+
+        if ($exists) {
+            return back()
+                ->withInput()
+                ->with('error', "Dokumen '{$request->nama_dokumen}' sudah pernah Anda upload. Silakan hapus dokumen lama terlebih dahulu jika ingin mengganti dengan yang baru.");
         }
 
         $file = $request->file('file');
@@ -44,6 +60,22 @@ class SiswaDokumenController extends Controller
         ]);
 
         return back()->with('success', 'Dokumen berhasil diupload!');
+    }
+
+    public function show($id)
+    {
+        $doc = Document::where('id', $id)
+                       ->whereHas('formulir', function ($q) {
+                           $q->where('user_id', auth()->id());
+                       })->firstOrFail();
+
+        $filePath = public_path('uploads/' . $doc->path_file);
+
+        if (!file_exists($filePath)) {
+            abort(404, 'File dokumen tidak ditemukan.');
+        }
+
+        return response()->file($filePath);
     }
 
     public function destroy($id)

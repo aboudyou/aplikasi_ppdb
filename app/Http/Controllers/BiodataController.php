@@ -36,21 +36,47 @@ class BiodataController extends Controller
     // Update profil
     public function update(Request $request)
     {
+        $biodata = FormulirPendaftaran::where('user_id', Auth::id())->first();
+        
         $request->validate([
-            'nama_lengkap' => 'required|string|max:100',
-            'nisn' => 'required',
-            'nik' => 'required',
-            'tempat_lahir' => 'required|string|max:100',
-            'tanggal_lahir' => 'required|date',
+            'nama_lengkap' => 'required|string|max:100|regex:/^[a-zA-Z\s]+$/',
+            'nisn' => 'required|numeric|digits:10|unique:formulir_pendaftaran,nisn,' . ($biodata?->id ?? 'NULL'),
+            'nik' => 'required|numeric|digits:16|unique:formulir_pendaftaran,nik,' . ($biodata?->id ?? 'NULL'),
+            'tempat_lahir' => 'required|string|max:100|regex:/^[a-zA-Z\s]+$/',
+            'tanggal_lahir' => 'required|date|before:today|after:1990-01-01',
             'jenis_kelamin' => 'required|in:L,P',
-            'agama' => 'required|string',
-            'alamat' => 'required|string',
+            'agama' => 'required|in:Islam,Kristen,Katolik,Hindu,Buddha,Konghucu',
+            'tinggi_badan' => 'nullable|numeric|min:50|max:250',
+            'berat_badan' => 'nullable|numeric|min:20|max:200',
+            'asal_sekolah' => 'required|string|max:100',
+            'anak_ke' => 'nullable|numeric|min:1|max:20',
+            'alamat' => 'required|string|min:5|max:255',
+            'no_hp' => 'nullable|numeric|digits_between:10,13',
             'jurusan_id' => 'required|exists:jurusan,id',
             'gelombang_id' => 'required|exists:gelombang_pendaftaran,id',
-            // accept either 'kelurahan' or legacy 'desa'
             'kelurahan' => 'required_without:desa|string',
             'desa' => 'required_without:kelurahan|string',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ], [
+            'nama_lengkap.regex' => 'Nama Lengkap hanya boleh berisi huruf dan spasi (tidak boleh angka atau simbol)',
+            'nisn.numeric' => 'NISN harus berisi angka saja (tidak boleh huruf)',
+            'nisn.digits' => 'NISN harus terdiri dari 10 angka',
+            'nisn.unique' => 'NISN sudah terdaftar di sistem',
+            'nik.numeric' => 'NIK harus berisi angka saja (tidak boleh huruf)',
+            'nik.digits' => 'NIK harus terdiri dari 16 angka',
+            'nik.unique' => 'NIK sudah terdaftar di sistem',
+            'tempat_lahir.regex' => 'Tempat Lahir hanya boleh berisi huruf dan spasi',
+            'tanggal_lahir.before' => 'Tanggal Lahir tidak boleh di masa depan',
+            'tanggal_lahir.after' => 'Tanggal Lahir tidak valid (terlalu jauh ke belakang)',
+            'agama.in' => 'Agama harus dipilih dari daftar yang tersedia',
+            'tinggi_badan.min' => 'Tinggi Badan minimal 50 cm',
+            'tinggi_badan.max' => 'Tinggi Badan maksimal 250 cm',
+            'berat_badan.min' => 'Berat Badan minimal 20 kg',
+            'berat_badan.max' => 'Berat Badan maksimal 200 kg',
+            'alamat.min' => 'Alamat Lengkap minimal 5 karakter',
+            'alamat.max' => 'Alamat Lengkap maksimal 255 karakter',
+            'no_hp.numeric' => 'Nomor HP harus berisi angka saja',
+            'no_hp.digits_between' => 'Nomor HP harus antara 10-13 digit',
         ]);
 
         $jenisKelamin = $request->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan';

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\FormulirPendaftaran;
 use Illuminate\Http\Request;
 use App\Mail\HasilSeleksiMail;
+use App\Services\SuratPenerimaanService;
 use Illuminate\Support\Facades\Mail;
 
 class SeleksiController extends Controller
@@ -34,7 +35,15 @@ class SeleksiController extends Controller
             try {
                 $user = $pendaftar->user;
                 $catatan = $request->catatan ?? null;
-                Mail::to($user->email)->send(new HasilSeleksiMail($user, $request->status_pendaftaran, $catatan));
+                $pdfPath = null;
+
+                // Jika diterima, generate surat penerimaan PDF
+                if ($request->status_pendaftaran === 'diterima') {
+                    $pdfPath = SuratPenerimaanService::getOrGeneratePdf($pendaftar);
+                }
+
+                // Kirim email dengan attachment PDF jika ada
+                Mail::to($user->email)->send(new HasilSeleksiMail($user, $request->status_pendaftaran, $catatan, $pdfPath));
                 $emailSent = true;
             } catch (\Exception $e) {
                 // Log error tapi jangan hentikan proses

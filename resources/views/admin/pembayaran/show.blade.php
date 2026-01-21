@@ -71,7 +71,7 @@
                 </div>
 
                 <!-- Bukti Pembayaran -->
-                <div class="card">
+                <div class="card mb-4">
                     <div class="card-body">
                         <h5 class="card-title mb-4"><i class="bi bi-image"></i> Bukti Pembayaran</h5>
                         @if($data->bukti_bayar)
@@ -93,7 +93,7 @@
             <!-- Action Panel -->
             <div class="col-lg-4">
                 @if($data->status == 'Menunggu')
-                    <div class="card sticky-top" style="top: 100px;">
+                    <div class="card">
                         <div class="card-body">
                             <h5 class="card-title mb-4"><i class="bi bi-shield-check"></i> Verifikasi</h5>
                             <p class="text-muted small mb-3">Periksa kembali data pembayaran sebelum memverifikasi</p>
@@ -114,7 +114,7 @@
                         </div>
                     </div>
                 @else
-                    <div class="card sticky-top" style="top: 100px;">
+                    <div class="card">
                         <div class="card-body">
                             <div class="alert alert-success mb-0">
                                 <i class="bi bi-check-circle"></i>

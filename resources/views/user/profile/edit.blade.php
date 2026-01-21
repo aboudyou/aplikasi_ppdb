@@ -29,12 +29,24 @@
 
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label class="form-label">NISN</label>
-                <input type="text" name="nisn" class="form-control" value="{{ old('nisn', $biodata->nisn ?? '') }}">
+                <label class="form-label">NISN (10 Angka) <span class="text-danger">*</span></label>
+                <input type="number" name="nisn" class="form-control @error('nisn') is-invalid @enderror" 
+                       value="{{ old('nisn', $biodata->nisn ?? '') }}" 
+                       maxlength="10" inputmode="numeric" placeholder="Contoh: 1234567890" required>
+                @error('nisn')
+                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                @enderror
+                <small class="text-muted">Hanya boleh angka, 10 digit</small>
             </div>
             <div class="col-md-6 mb-3">
-                <label class="form-label">NIK</label>
-                <input type="text" name="nik" class="form-control" value="{{ old('nik', $biodata->nik ?? '') }}">
+                <label class="form-label">NIK (16 Angka) <span class="text-danger">*</span></label>
+                <input type="number" name="nik" class="form-control @error('nik') is-invalid @enderror" 
+                       value="{{ old('nik', $biodata->nik ?? '') }}" 
+                       maxlength="16" inputmode="numeric" placeholder="Contoh: 1234567890123456" required>
+                @error('nik')
+                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                @enderror
+                <small class="text-muted">Hanya boleh angka, 16 digit</small>
             </div>
         </div>
 
@@ -66,8 +78,14 @@
 
         <!-- No HP -->
         <div class="mb-3">
-            <label class="form-label">No. HP</label>
-            <input type="text" name="no_hp" class="form-control" value="{{ old('no_hp', $biodata->no_hp ?? '') }}">
+            <label class="form-label">No. HP (Opsional)</label>
+            <input type="tel" name="no_hp" class="form-control @error('no_hp') is-invalid @enderror" 
+                   value="{{ old('no_hp', $biodata->no_hp ?? '') }}" 
+                   inputmode="numeric" placeholder="Contoh: 08123456789">
+            @error('no_hp')
+                <div class="invalid-feedback d-block">{{ $message }}</div>
+            @enderror
+            <small class="text-muted">Hanya boleh angka, 10-13 digit</small>
         </div>
 
         <!-- Jurusan & Gelombang -->

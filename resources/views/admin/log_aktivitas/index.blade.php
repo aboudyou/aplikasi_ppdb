@@ -51,9 +51,44 @@
                         </table>
                     </div>
                     @if($logs->hasPages())
-                        <div class="d-flex justify-content-center mt-3">
-                            {{ $logs->links() }}
-                        </div>
+                        <nav aria-label="Page navigation" class="d-flex justify-content-center mt-4">
+                            <ul class="pagination">
+                                {{-- Previous Page Link --}}
+                                @if ($logs->onFirstPage())
+                                    <li class="page-item disabled">
+                                        <span class="page-link">← Previous</span>
+                                    </li>
+                                @else
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $logs->previousPageUrl() }}">← Previous</a>
+                                    </li>
+                                @endif
+
+                                {{-- Pagination Elements --}}
+                                @foreach ($logs->getUrlRange(1, $logs->lastPage()) as $page => $url)
+                                    @if ($page == $logs->currentPage())
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ $page }}</span>
+                                        </li>
+                                    @else
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                                        </li>
+                                    @endif
+                                @endforeach
+
+                                {{-- Next Page Link --}}
+                                @if ($logs->hasMorePages())
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $logs->nextPageUrl() }}">Next →</a>
+                                    </li>
+                                @else
+                                    <li class="page-item disabled">
+                                        <span class="page-link">Next →</span>
+                                    </li>
+                                @endif
+                            </ul>
+                        </nav>
                     @endif
                 </div>
             </div>

@@ -6,50 +6,6 @@
 <div class="container-fluid px-3 mt-4">
     <h3 class="mb-4"><i class="bi bi-calendar-event"></i> Kelola Gelombang Pendaftaran</h3>
 
-    {{-- Statistics Cards --}}
-    <div class="row g-4 mb-4" style="margin-left: -20px;">
-        {{-- Total Gelombang --}}
-        <div class="col-md-4">
-            <div class="card mb-3" data-aos="fade-up">
-                <div class="card-body text-center">
-                    <i class="bi bi-calendar-event dashboard-icon text-primary"></i>
-                    <h5 class="card-title mt-3">Total Gelombang</h5>
-                    <p class="text-muted">{{ $gelombang->count() }} gelombang</p>
-                </div>
-            </div>
-        </div>
-        {{-- Gelombang Aktif --}}
-        <div class="col-md-4">
-            <div class="card mb-3" data-aos="fade-up" data-aos-delay="100">
-                <div class="card-body text-center">
-                    <i class="bi bi-calendar-check dashboard-icon text-success"></i>
-                    <h5 class="card-title mt-3">Gelombang Aktif</h5>
-                    <p class="text-muted">{{ $gelombang->where('tanggal_selesai', '>=', now())->count() }} aktif</p>
-                </div>
-            </div>
-        </div>
-        {{-- Dengan Promo --}}
-        <div class="col-md-4">
-            <div class="card mb-3" data-aos="fade-up" data-aos-delay="200">
-                <div class="card-body text-center">
-                    <i class="bi bi-percent dashboard-icon text-warning"></i>
-                    <h5 class="card-title mt-3">Dengan Promo</h5>
-                    <p class="text-muted">{{ $gelombang->whereNotNull('jenis_promo')->count() }} dengan promo</p>
-                </div>
-            </div>
-        </div>
-        {{-- Total Pendaftar --}}
-        <div class="col-md-4">
-            <div class="card mb-3" data-aos="fade-up" data-aos-delay="300">
-                <div class="card-body text-center">
-                    <i class="bi bi-people-fill dashboard-icon text-info"></i>
-                    <h5 class="card-title mt-3">Total Pendaftar</h5>
-                    <p class="text-muted">{{ $gelombang->sum(function($item) { return $item->getJumlahPeserta(); }) }} pendaftar</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
     {{-- Main Content --}}
     <div class="card" data-aos="fade-up">
         <div class="card-header">

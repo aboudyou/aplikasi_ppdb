@@ -59,17 +59,27 @@
             -webkit-backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
-            padding: 1rem 0;
+            padding: 1rem 2rem;
             position: sticky;
             top: 0;
             z-index: 999;
+        }
+
+        .navbar-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0;
         }
 
         .navbar-brand {
             font-family: 'Playfair Display', serif;
             font-weight: 700;
             letter-spacing: 2px;
-            font-size: 1.8rem;
+            font-size: 1.4rem;
             background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -81,7 +91,7 @@
 
         .navbar-brand::before {
             content: '🎓';
-            font-size: 1.5rem;
+            font-size: 1.2rem;
         }
 
         .nav-link {
@@ -135,6 +145,8 @@
             flex: 1;
             margin-top: 40px;
             margin-bottom: 40px;
+            padding: 0 2rem !important;
+            max-width: 100%;
         }
 
         /* Modern Card Design */
@@ -162,7 +174,7 @@
 
         /* Icon Animasi Dashboard Siswa */
         .dashboard-icon {
-            font-size: 3.5rem;
+            font-size: 1.8rem;
             margin-bottom: 10px;
             transition: transform 0.4s cubic-bezier(0.4,0,0.2,1), filter 0.4s;
             filter: drop-shadow(0 2px 8px rgba(59,130,246,0.12));
@@ -552,11 +564,24 @@
 <body>
     {{-- Navbar --}}
     <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url('/') }}">PPDB Online</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+        <div class="navbar-container">
+            <div class="d-flex align-items-flex-start gap-3" style="width: 100%;">
+                <div>
+                    <a class="navbar-brand" href="{{ url('/') }}" style="margin: 0;">PPDB Online</a>
+                    @auth
+                    <div style="margin-top: 5px;">
+                        <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-sm btn-outline-light" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;"><i class="bi bi-box-arrow-right me-1"></i> Logout</button>
+                        </form>
+                    </div>
+                    @endauth
+                </div>
+                
+                <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
@@ -569,6 +594,7 @@
                             <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{{ route('admin.gelombang.index') }}"><i class="bi bi-calendar-event me-1"></i> Gelombang</a></li>
                             <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{{ route('admin.laporan.index') }}"><i class="bi bi-file-earmark-text me-1"></i> Laporan</a></li>
                             <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{{ route('admin.verifikasi.index') }}"><i class="bi bi-file-check me-1"></i> Verifikasi</a></li>
+                            <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{{ route('admin.dokumen.index') }}"><i class="bi bi-file-earmark-pdf me-1"></i> Dokumen</a></li>
                             <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{{ route('admin.pembayaran.index', ['status' => 'menunggu']) }}"><i class="bi bi-wallet2 me-1"></i> Pembayaran</a></li>
                             <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{{ route('admin.pengumuman.index') }}"><i class="bi bi-megaphone me-1"></i> Pengumuman</a></li>
                         @else
@@ -576,13 +602,6 @@
                             <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{{ route('user.profile.index') }}"><i class="bi bi-person-circle me-1"></i> Profil</a></li>
                             <li class="nav-item"><a class="nav-link d-flex align-items-center" href="{{ route('user.pengumuman') }}"><i class="bi bi-megaphone me-1"></i> Pengumuman</a></li>
                         @endif
-
-                        <li class="nav-item">
-                            <form action="{{ route('logout') }}" method="POST" class="d-inline">
-                                @csrf
-                                <button type="submit" class="btn btn-sm btn-outline-light ms-2"><i class="bi bi-box-arrow-right me-1"></i> Logout</button>
-                            </form>
-                        </li>
                     @endguest
                 </ul>
             </div>

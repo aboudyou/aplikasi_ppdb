@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\PengumumanController as AdminPengumumanController
 use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\Admin\GelombangController;
 use App\Http\Controllers\Admin\JurusanController;
+use App\Http\Controllers\Admin\DokumenController;
 use App\Http\Controllers\LogAktivitasController;
 
 // =======================
@@ -127,6 +128,16 @@ Route::middleware('auth')->group(function () {
                 Route::post('/{id}/reject', [VerifikasiController::class, 'reject'])->name('reject');
             });
 
+            // DOKUMEN
+            Route::prefix('dokumen')->name('dokumen.')->group(function () {
+                Route::get('/download/{id}', [DokumenController::class, 'download'])->name('download');
+                Route::get('/view/{id}', [DokumenController::class, 'view'])->name('view');
+                Route::get('/', [DokumenController::class, 'index'])->name('index');
+                Route::get('/{id}', [DokumenController::class, 'show'])->name('show');
+                Route::post('/{id}/approve', [DokumenController::class, 'approve'])->name('approve');
+                Route::post('/{id}/reject', [DokumenController::class, 'reject'])->name('reject');
+            });
+
             // SELEKSI
             Route::prefix('seleksi')->name('seleksi.')->group(function () {
                 Route::get('/', [AdminSeleksiController::class, 'index'])->name('index');
@@ -189,12 +200,24 @@ Route::middleware('auth')->group(function () {
 
             Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
 
-            // BIODATA
+            // BIODATA (Multi-step)
             Route::get('/biodata', [UserController::class, 'biodata'])->name('biodata');
+            Route::get('/biodata/step1', [UserController::class, 'biodataStep1'])->name('biodata.step1');
+            Route::post('/biodata/step1/store', [UserController::class, 'storeStep1'])->name('biodata.store.step1');
+            Route::get('/biodata/step2', [UserController::class, 'biodataStep2'])->name('biodata.step2');
+            Route::post('/biodata/step2/store', [UserController::class, 'storeStep2'])->name('biodata.store.step2');
+            
+            // Legacy route untuk backward compatibility
             Route::post('/biodata/save', [UserController::class, 'storeBiodata'])->name('biodata.save');
 
-            // ORANG TUA
+            // ORANG TUA (Multi-step)
             Route::get('/orangtua', [OrangTuaController::class, 'index'])->name('orangtua');
+            Route::get('/orangtua/step1', [OrangTuaController::class, 'step1'])->name('orangtua.step1');
+            Route::post('/orangtua/step1/store', [OrangTuaController::class, 'storeStep1'])->name('orangtua.store.step1');
+            Route::get('/orangtua/step2', [OrangTuaController::class, 'step2'])->name('orangtua.step2');
+            Route::post('/orangtua/step2/store', [OrangTuaController::class, 'storeStep2'])->name('orangtua.store.step2');
+            
+            // Legacy route untuk backward compatibility
             Route::post('/orangtua/save', [OrangTuaController::class, 'store'])->name('orangtua.save');
 
             // PROFILE
@@ -208,15 +231,18 @@ Route::middleware('auth')->group(function () {
             // DOKUMEN
             Route::get('/dokumen', [SiswaDokumenController::class, 'index'])->name('dokumen.index');
             Route::post('/dokumen/upload', [SiswaDokumenController::class, 'store'])->name('dokumen.store');
+            Route::get('/dokumen/{id}', [SiswaDokumenController::class, 'show'])->name('dokumen.show');
             Route::delete('/dokumen/{id}', [SiswaDokumenController::class, 'destroy'])->name('dokumen.destroy');
 
             // PEMBAYARAN
             Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran');
             Route::post('/pembayaran/upload', [PembayaranController::class, 'store'])->name('pembayaran.upload');
+            Route::get('/pembayaran/kuitansi', [PembayaranController::class, 'kuitansi'])->name('pembayaran.kuitansi');
 
             // STATUS SELEKSI
             Route::get('/status', [StatusSeleksiController::class, 'index'])->name('status');
             Route::get('/seleksi', [SeleksiController::class, 'index'])->name('seleksi');
+            Route::get('/surat-penerimaan', [SeleksiController::class, 'suratPenerimaan'])->name('surat_penerimaan');
 
             // DAFTAR ULANG
             Route::get('/daftar-ulang', [UserController::class, 'daftarUlang'])->name('daftar_ulang');

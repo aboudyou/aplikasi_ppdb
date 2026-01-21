@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Queue\SerializesModels;
 
 class HasilSeleksiMail extends Mailable
@@ -16,15 +17,17 @@ class HasilSeleksiMail extends Mailable
     public $user;
     public $status;
     public $catatan;
+    public $pdfPath;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($user, $status, $catatan = null)
+    public function __construct($user, $status, $catatan = null, $pdfPath = null)
     {
         $this->user = $user;
         $this->status = $status;
         $this->catatan = $catatan;
+        $this->pdfPath = $pdfPath;
     }
 
     /**
@@ -58,6 +61,15 @@ class HasilSeleksiMail extends Mailable
      */
     public function attachments(): array
     {
-        return [];
+        $attachments = [];
+        
+        // Jika status diterima dan ada PDF surat penerimaan, attach ke email
+        if ($this->status === 'diterima' && $this->pdfPath && file_exists($this->pdfPath)) {
+            $attachments[] = Attachment::fromPath($this->pdfPath)
+                ->as('Surat_Penerimaan_' . str_replace(' ', '_', $this->user->name) . '.pdf')
+                ->withMime('application/pdf');
+        }
+        
+        return $attachments;
     }
 }

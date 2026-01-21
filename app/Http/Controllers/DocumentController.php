@@ -20,7 +20,23 @@ class DocumentController extends Controller
         $request->validate([
             'nama_dokumen' => 'required|string',
             'file' => 'required|mimes:pdf,jpg,png,jpeg|max:2048',
+        ], [
+            'nama_dokumen.required' => 'Nama dokumen harus dipilih',
+            'file.required' => 'File harus diunggah',
+            'file.mimes' => 'Tipe file harus: PDF, JPG, JPEG, atau PNG',
+            'file.max' => 'Ukuran file maksimal 2MB',
         ]);
+
+        // Cek apakah dokumen dengan nama yang sama sudah ada untuk user ini
+        $exists = Document::where('user_id', Auth::id())
+                         ->where('nama_dokumen', $request->nama_dokumen)
+                         ->exists();
+
+        if ($exists) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', "Dokumen '{$request->nama_dokumen}' sudah pernah Anda upload. Silakan hapus dokumen lama terlebih dahulu jika ingin mengganti dengan yang baru.");
+        }
 
         // Simpan file ke storage/app/public/documents
         $path = $request->file('file')->store('documents', 'public');

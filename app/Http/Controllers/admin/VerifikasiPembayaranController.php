@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Pembayaran;
+use App\Mail\KuitansiPembayaranMail;
+use App\Services\KuitansiService;
+use Illuminate\Support\Facades\Mail;
 
 class VerifikasiPembayaranController extends Controller
 {
@@ -47,7 +50,26 @@ class VerifikasiPembayaranController extends Controller
             'verified_at' => now(),
         ]);
 
-        return redirect()->route('admin.pembayaran.index')->with('success', 'Pembayaran diterima dan ditandai Lunas.');
+        // Generate nomor kuitansi jika belum ada
+        if (!$p->no_kuitansi) {
+            $p->update([
+                'no_kuitansi' => 'KUI-' . str_pad($p->id, 6, '0', STR_PAD_LEFT)
+            ]);
+        }
+
+        // Generate PDF kuitansi
+        try {
+            $pdfPath = KuitansiService::getOrGeneratePdf($p);
+            
+            // Kirim email dengan kuitansi PDF
+            $userEmail = $p->formulir->user->email;
+            Mail::to($userEmail)->send(new KuitansiPembayaranMail($p, $pdfPath));
+        } catch (\Exception $e) {
+            // Log error tapi jangan block approval
+            \Log::error('Error mengirim email kuitansi: ' . $e->getMessage());
+        }
+
+        return redirect()->route('admin.pembayaran.index')->with('success', 'Pembayaran diterima, kuitansi telah dikirim ke email siswa.');
     }
 
     public function reject($id)
