@@ -24,6 +24,7 @@ class JurusanController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nama_jurusan' => 'required|string|max:255|unique:jurusan,nama_jurusan',
+            'kuota' => 'required|integer|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -32,6 +33,7 @@ class JurusanController extends Controller
 
         Jurusan::create([
             'nama_jurusan' => $request->nama_jurusan,
+            'kuota' => $request->kuota,
         ]);
 
         return redirect()->route('admin.jurusan.index')->with('success', 'Jurusan berhasil ditambahkan.');
@@ -49,6 +51,7 @@ class JurusanController extends Controller
 
         $validator = Validator::make($request->all(), [
             'nama_jurusan' => 'required|string|max:255|unique:jurusan,nama_jurusan,' . $id,
+            'kuota' => 'required|integer|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -57,6 +60,7 @@ class JurusanController extends Controller
 
         $jurusan->update([
             'nama_jurusan' => $request->nama_jurusan,
+            'kuota' => $request->kuota,
         ]);
 
         return redirect()->route('admin.jurusan.index')->with('success', 'Jurusan berhasil diperbarui.');

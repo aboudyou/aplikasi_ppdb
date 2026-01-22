@@ -154,8 +154,6 @@
                             <select id="metodeSelect" name="metode" class="form-control mb-3" required>
                                 <option value="">Pilih Metode</option>
                                 <option>Transfer Bank</option>
-                                <option>QRIS</option>
-                                <option>Cash</option>
                             </select>
 
                             <label class="form-label"><strong>Upload Bukti Pembayaran</strong></label>
@@ -180,18 +178,6 @@
                 const bukti = document.getElementById('buktiInput');
                 if(!metode || !bukti) return;
 
-                function toggleBuktiRequired(){
-                    const val = metode.value.toLowerCase();
-                    if(val.includes('cash')){
-                        bukti.removeAttribute('required');
-                    } else {
-                        bukti.setAttribute('required','required');
-                    }
-                }
-
-                metode.addEventListener('change', toggleBuktiRequired);
-                // initialize
-                toggleBuktiRequired();
             })();
         </script>
 

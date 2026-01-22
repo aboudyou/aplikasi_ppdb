@@ -61,8 +61,8 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" 
-                       pattern="[a-zA-Z\s]+" placeholder="Contoh: Muhammad Reza Hidayat" required
-                       value="<?php echo e(old('nama_lengkap')); ?>">
+                       placeholder="Contoh: Muhammad Reza Hidayat" required
+                       value="<?php echo e(old('nama_lengkap', $biodata->nama_lengkap ?? '')); ?>">
                 <?php $__errorArgs = ['nama_lengkap'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -73,7 +73,6 @@ $message = $__bag->first($__errorArgs[0]); ?>
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
-                <small class="text-muted">Hanya huruf dan spasi, tanpa angka atau simbol</small>
             </div>
 
             <!-- NISN & NIK -->
@@ -89,7 +88,7 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" 
                            inputmode="numeric" placeholder="Contoh: 1234567890" required
-                           value="<?php echo e(old('nisn')); ?>">
+                           value="<?php echo e(old('nisn', $biodata->nisn ?? '')); ?>">
                     <?php $__errorArgs = ['nisn'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -114,7 +113,7 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" 
                            inputmode="numeric" placeholder="Contoh: 1234567890123456" required
-                           value="<?php echo e(old('nik')); ?>">
+                           value="<?php echo e(old('nik', $biodata->nik ?? '')); ?>">
                     <?php $__errorArgs = ['nik'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -141,8 +140,8 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                           pattern="[a-zA-Z\s]+" placeholder="Contoh: Jakarta" required
-                           value="<?php echo e(old('tempat_lahir')); ?>">
+                           placeholder="Contoh: Jakarta" required
+                           value="<?php echo e(old('tempat_lahir', $biodata->tempat_lahir ?? '')); ?>">
                     <?php $__errorArgs = ['tempat_lahir'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -166,8 +165,8 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                           max="<?php echo e(now()->subYears(12)->format('Y-m-d')); ?>" required
-                           value="<?php echo e(old('tanggal_lahir')); ?>">
+                           max="<?php echo e(now()->format('Y-m-d')); ?>" required
+                           value="<?php echo e(old('tanggal_lahir', $biodata->tanggal_lahir ?? '')); ?>">
                     <?php $__errorArgs = ['tanggal_lahir'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -178,7 +177,7 @@ $message = $__bag->first($__errorArgs[0]); ?>
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
-                    <small class="text-muted">Minimal 12 tahun, tidak boleh di masa depan</small>
+                    <small class="text-muted">Tidak boleh di masa depan</small>
                 </div>
             </div>
 
@@ -196,12 +195,12 @@ endif;
 unset($__errorArgs, $__bag); ?>>
                         <div class="form-check">
                             <input type="radio" name="jenis_kelamin" value="L" class="form-check-input" required 
-                                   <?php echo e(old('jenis_kelamin') === 'L' ? 'checked' : ''); ?>>
+                                   <?php echo e(old('jenis_kelamin', $biodata && $biodata->jenis_kelamin === 'Laki-laki' ? 'L' : old('jenis_kelamin')) === 'L' ? 'checked' : ''); ?>>
                             <label class="form-check-label">Laki-laki</label>
                         </div>
                         <div class="form-check">
                             <input type="radio" name="jenis_kelamin" value="P" class="form-check-input"
-                                   <?php echo e(old('jenis_kelamin') === 'P' ? 'checked' : ''); ?>>
+                                   <?php echo e(old('jenis_kelamin', $biodata && $biodata->jenis_kelamin === 'Perempuan' ? 'P' : old('jenis_kelamin')) === 'P' ? 'checked' : ''); ?>>
                             <label class="form-check-label">Perempuan</label>
                         </div>
                     </div>
@@ -229,7 +228,7 @@ endif;
 unset($__errorArgs, $__bag); ?>" required>
                         <option value="">-- Pilih Agama --</option>
                         <?php $__currentLoopData = ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ag): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <option value="<?php echo e($ag); ?>" <?php echo e(old('agama') === $ag ? 'selected' : ''); ?>><?php echo e($ag); ?></option>
+                            <option value="<?php echo e($ag); ?>" <?php echo e(old('agama', $biodata->agama ?? '') === $ag ? 'selected' : ''); ?>><?php echo e($ag); ?></option>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </select>
                     <?php $__errorArgs = ['agama'];
@@ -258,7 +257,7 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
                            min="50" max="250" placeholder="Contoh: 170" required
-                           value="<?php echo e(old('tinggi_badan')); ?>">
+                           value="<?php echo e(old('tinggi_badan', $biodata->tinggi_badan ?? '')); ?>">
                     <?php $__errorArgs = ['tinggi_badan'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -283,7 +282,7 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
                            min="20" max="200" placeholder="Contoh: 65" required
-                           value="<?php echo e(old('berat_badan')); ?>">
+                           value="<?php echo e(old('berat_badan', $biodata->berat_badan ?? '')); ?>">
                     <?php $__errorArgs = ['berat_badan'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -311,7 +310,7 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
                            placeholder="Contoh: SMP Negeri 1 Sidoarjo" required
-                           value="<?php echo e(old('asal_sekolah')); ?>">
+                           value="<?php echo e(old('asal_sekolah', $biodata->asal_sekolah ?? '')); ?>">
                     <?php $__errorArgs = ['asal_sekolah'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -335,7 +334,7 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
                            min="1" max="20" placeholder="Contoh: 1" required
-                           value="<?php echo e(old('anak_ke')); ?>">
+                           value="<?php echo e(old('anak_ke', $biodata->anak_ke ?? '')); ?>">
                     <?php $__errorArgs = ['anak_ke'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -351,18 +350,52 @@ unset($__errorArgs, $__bag); ?>
             </div>
 
             <!-- Tombol -->
-            <div class="mt-4 d-flex gap-2">
+            <div class="mt-4 d-flex gap-2 flex-wrap">
                 <a href="<?php echo e(route('user.dashboard')); ?>" class="btn btn-secondary px-4">
                     <i class="bi bi-arrow-left"></i> Kembali
                 </a>
                 <button type="submit" class="btn btn-primary px-4">
                     <i class="bi bi-arrow-right"></i> Lanjut ke Step 2
                 </button>
+                <button type="button" class="btn btn-danger px-4" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    <i class="bi bi-trash"></i> Hapus & Isi Ulang
+                </button>
             </div>
 
         </form>
     </div>
 </div>
+
+<!-- Modal Konfirmasi Hapus -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-danger">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle"></i> Hapus Biodata?
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2"><strong>Perhatian!</strong></p>
+                <p class="mb-2">Anda akan menghapus semua data biodata Anda. Tindakan ini tidak dapat dibatalkan.</p>
+                <p class="mb-2">Setelah dihapus, Anda dapat mengisinya kembali dari awal dengan data yang benar.</p>
+                <p class="mb-0 text-danger"><strong>Apakah Anda yakin ingin melanjutkan?</strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <form action="<?php echo e(route('user.profile.destroy')); ?>" method="POST" style="display: inline;">
+                    <?php echo csrf_field(); ?>
+                    <?php echo method_field('DELETE'); ?>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Ya, Hapus Biodata
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Lenovo\Documents\adi_ppdb\aplikasi_ppdb\resources\views/user/biodata/step1.blade.php ENDPATH**/ ?>

@@ -22,6 +22,23 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+
+                        <div class="form-group mb-3">
+                            <label for="kuota" class="form-label">Kuota</label>
+                            <input type="number" class="form-control @error('kuota') is-invalid @enderror" id="kuota" name="kuota" value="{{ old('kuota', $jurusan->kuota) }}" min="0" required>
+                            <small class="text-muted">Masukkan 0 jika tidak ada batasan kuota</small>
+                            @error('kuota')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="alert alert-info">
+                            <strong>Informasi:</strong> Saat ini sudah ada <strong>{{ $jurusan->getAcceptedCount() }}</strong> siswa yang diterima.
+                            @if($jurusan->kuota > 0)
+                                Sisa kuota: <strong>{{ $jurusan->getAvailableQuota() }} dari {{ $jurusan->kuota }}</strong>
+                            @endif
+                        </div>
+
                         <button type="submit" class="btn btn-primary">Update</button>
                     </form>
                 </div>

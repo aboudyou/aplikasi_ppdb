@@ -31,19 +31,22 @@ class UserController extends Controller
 
     public function biodataStep1()
     {
-        $data = FormulirPendaftaran::where('user_id', Auth::id())->first();
+        $biodata = FormulirPendaftaran::where('user_id', Auth::id())->first();
         
-        if ($data) {
-            return view('user.biodata.summary', compact('data'));
-        }
-
-        return view('user.biodata.step1');
+        // Always pass $biodata (null if doesn't exist) to view
+        return view('user.biodata.step1', compact('biodata'));
     }
 
     public function biodataStep2()
     {
         $jurusan = Jurusan::all();
         $gelombang = GelombangPendaftaran::all();
+        $biodata = FormulirPendaftaran::where('user_id', Auth::id())->first();
+        
+        // Jika sudah ada biodata, bisa langsung ke step2 untuk edit
+        if ($biodata) {
+            return view('user.biodata.step2', compact('jurusan', 'gelombang', 'biodata'));
+        }
         
         // Redirect ke step 1 jika belum ada data di session
         if (!session()->has('biodata_step1_data')) {
@@ -55,44 +58,47 @@ class UserController extends Controller
 
     public function storeStep1(Request $request)
     {
+        $biodata = FormulirPendaftaran::where('user_id', Auth::id())->first();
+        
+        // Jika edit, allow duplicate nisn/nik untuk record yang sama
+        $nisn_rule = 'required|numeric|digits:10' . ($biodata ? '|unique:formulir_pendaftaran,nisn,' . $biodata->id : '|unique:formulir_pendaftaran,nisn');
+        $nik_rule = 'required|numeric|digits:16' . ($biodata ? '|unique:formulir_pendaftaran,nik,' . $biodata->id : '|unique:formulir_pendaftaran,nik');
+        
         $request->validate([
-            'nama_lengkap' => 'required|string|max:100|regex:/^[a-zA-Z\s]+$/',
-            'nisn' => 'required|numeric|digits:10|unique:formulir_pendaftaran,nisn',
-            'nik' => 'required|numeric|digits:16|unique:formulir_pendaftaran,nik',
-            'tempat_lahir' => 'required|string|max:100|regex:/^[a-zA-Z\s]+$/',
-            'tanggal_lahir' => 'required|date|before:today|after:1990-01-01',
+            'nama_lengkap' => 'required|string|max:100',
+            'nisn' => $nisn_rule,
+            'nik' => $nik_rule,
+            'tempat_lahir' => 'required|string|max:100',
+            'tanggal_lahir' => 'required|date|before:today',
             'jenis_kelamin' => 'required|in:L,P',
             'agama' => 'required|in:Islam,Kristen,Katolik,Hindu,Buddha,Konghucu',
             'tinggi_badan' => 'nullable|numeric|min:50|max:250',
             'berat_badan' => 'nullable|numeric|min:20|max:200',
             'asal_sekolah' => 'required|string|max:100',
             'anak_ke' => 'nullable|numeric|min:1|max:20',
-        ], [
-            'nama_lengkap.required' => 'Nama Lengkap harus diisi',
-            'nama_lengkap.regex' => 'Nama Lengkap hanya boleh berisi huruf dan spasi (tidak boleh angka atau simbol)',
-            'nisn.required' => 'NISN harus diisi',
-            'nisn.numeric' => 'NISN harus berisi angka saja',
-            'nisn.digits' => 'NISN harus terdiri dari 10 angka',
-            'nisn.unique' => 'NISN sudah terdaftar di sistem',
-            'nik.required' => 'NIK harus diisi',
-            'nik.numeric' => 'NIK harus berisi angka saja',
-            'nik.digits' => 'NIK harus terdiri dari 16 angka',
-            'nik.unique' => 'NIK sudah terdaftar di sistem',
-            'tempat_lahir.required' => 'Tempat Lahir harus diisi',
-            'tempat_lahir.regex' => 'Tempat Lahir hanya boleh berisi huruf dan spasi',
-            'tanggal_lahir.required' => 'Tanggal Lahir harus diisi',
-            'tanggal_lahir.before' => 'Tanggal Lahir tidak boleh di masa depan',
-            'jenis_kelamin.required' => 'Jenis Kelamin harus dipilih',
-            'agama.required' => 'Agama harus dipilih',
-            'tinggi_badan.numeric' => 'Tinggi Badan harus berupa angka',
-            'tinggi_badan.min' => 'Tinggi Badan minimal 50 cm',
-            'berat_badan.numeric' => 'Berat Badan harus berupa angka',
-            'berat_badan.min' => 'Berat Badan minimal 20 kg',
-            'asal_sekolah.required' => 'Asal Sekolah harus diisi',
-            'anak_ke.numeric' => 'Anak ke- harus berupa angka',
         ]);
 
-        // Simpan ke session
+        // Jika ada biodata lama, update langsung ke DB
+        if ($biodata) {
+            $biodata->update([
+                'nama_lengkap' => $request->nama_lengkap,
+                'nisn' => $request->nisn,
+                'nik' => $request->nik,
+                'tempat_lahir' => $request->tempat_lahir,
+                'tanggal_lahir' => $request->tanggal_lahir,
+                'jenis_kelamin' => $request->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan',
+                'agama' => $request->agama,
+                'tinggi_badan' => $request->tinggi_badan,
+                'berat_badan' => $request->berat_badan,
+                'asal_sekolah' => $request->asal_sekolah,
+                'anak_ke' => $request->anak_ke,
+            ]);
+            
+            // LANJUT KE STEP 2 untuk bisa edit alamat/jurusan juga
+            return redirect()->route('user.biodata.step2')->with('success', 'Data Diri berhasil diperbarui! Silakan lanjut ke step 2 untuk update alamat/jurusan.');
+        }
+
+        // Simpan ke session untuk flow CREATE baru
         session(['biodata_step1_data' => $request->only([
             'nama_lengkap', 'nisn', 'nik', 'tempat_lahir', 'tanggal_lahir', 
             'jenis_kelamin', 'agama', 'tinggi_badan', 'berat_badan', 
@@ -106,34 +112,42 @@ class UserController extends Controller
 
     public function storeStep2(Request $request)
     {
-        // Ambil data step 1 dari session
-        $step1Data = session('biodata_step1_data');
+        $biodata = FormulirPendaftaran::where('user_id', Auth::id())->first();
         
-        if (!$step1Data) {
-            return redirect()->route('user.biodata.step1')->with('error', 'Session expired, silakan mulai dari awal');
-        }
-
+        // Validasi
         $request->validate([
             'alamat' => 'required|string|min:5|max:255',
             'desa' => 'nullable|string|max:100',
-            'kelurahan' => 'nullable|string|max:100',
             'kecamatan' => 'required|string|max:100',
             'kota' => 'required|string|max:100',
             'no_hp' => 'nullable|numeric|digits_between:10,13',
             'jurusan_id' => 'required|exists:jurusan,id',
             'gelombang_id' => 'required|exists:gelombang_pendaftaran,id',
-        ], [
-            'alamat.required' => 'Alamat Lengkap harus diisi',
-            'alamat.min' => 'Alamat minimal 5 karakter',
-            'kecamatan.required' => 'Kecamatan harus diisi',
-            'kota.required' => 'Kota harus diisi',
-            'no_hp.numeric' => 'No. HP hanya boleh angka',
-            'no_hp.digits_between' => 'No. HP harus 10-13 digit',
-            'jurusan_id.required' => 'Jurusan harus dipilih',
-            'gelombang_id.required' => 'Gelombang Pendaftaran harus dipilih',
         ]);
 
-        // Merge semua data
+        // Jika ada biodata lama, ONLY UPDATE step2 fields
+        if ($biodata) {
+            $biodata->update([
+                'alamat' => $request->alamat,
+                'kelurahan_desa' => $request->desa,
+                'kecamatan' => $request->kecamatan,
+                'kota' => $request->kota,
+                'no_hp' => $request->no_hp,
+                'jurusan_id' => $request->jurusan_id,
+                'gelombang_id' => $request->gelombang_id,
+                'status_pendaftaran' => 'Lengkap',
+            ]);
+            
+            return redirect()->route('user.biodata')->with('success', 'Alamat & Jurusan berhasil diperbarui!');
+        }
+
+        // JIKA CREATE BARU - ambil dari session step1
+        $step1Data = session('biodata_step1_data');
+        if (!$step1Data) {
+            return redirect()->route('user.biodata.step1')->with('error', 'Session expired, silakan mulai dari awal');
+        }
+
+        // Merge semua data untuk CREATE
         $allData = [
             'nama_lengkap' => $step1Data['nama_lengkap'],
             'nisn' => $step1Data['nisn'],
@@ -147,20 +161,15 @@ class UserController extends Controller
             'asal_sekolah' => $step1Data['asal_sekolah'],
             'anak_ke' => $step1Data['anak_ke'] ?? 0,
             'alamat' => $request->alamat,
-            'kelurahan_desa' => ($request->kelurahan ?? '') . ($request->desa ? ', ' . $request->desa : ''),
+            'kelurahan_desa' => $request->desa,
             'kecamatan' => $request->kecamatan,
             'kota' => $request->kota,
             'no_hp' => $request->no_hp,
             'jurusan_id' => $request->jurusan_id,
             'gelombang_id' => $request->gelombang_id,
             'status_pendaftaran' => 'Lengkap',
+            'nomor_pendaftaran' => $this->generateNomorPendaftaran(),
         ];
-
-        // Cek apakah sudah ada formulir, jika belum ada generate nomor_pendaftaran
-        $existingForm = FormulirPendaftaran::where('user_id', Auth::id())->first();
-        if (!$existingForm) {
-            $allData['nomor_pendaftaran'] = $this->generateNomorPendaftaran();
-        }
 
         // Simpan ke database
         $form = FormulirPendaftaran::updateOrCreate(

@@ -63,6 +63,20 @@
                             <label class="form-check-label" for="remember">Ingat saya</label>
                         </div>
 
+                        <div class="mb-3">
+                            <div class="g-recaptcha" data-sitekey="<?php echo e(config('services.recaptcha.site_key') ?? 'KEY_NOT_FOUND'); ?>"></div>
+                            <?php $__errorArgs = ['g-recaptcha-response'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <small class="text-danger"><?php echo e($message); ?></small>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                        </div>
+
                         <button type="submit" class="btn btn-primary w-100 mb-3">Masuk</button>
                     </form>
 

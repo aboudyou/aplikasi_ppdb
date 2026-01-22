@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\FormulirPendaftaran;
+use App\Models\Jurusan;
 use Illuminate\Http\Request;
 use App\Mail\HasilSeleksiMail;
 use App\Services\SuratPenerimaanService;
@@ -27,6 +28,16 @@ class SeleksiController extends Controller
 
         $pendaftar = FormulirPendaftaran::findOrFail($id);
         $oldStatus = $pendaftar->status_pendaftaran;
+
+        // Validasi kuota jika status yang diinginkan adalah 'diterima'
+        if ($request->status_pendaftaran === 'diterima' && $oldStatus !== 'diterima') {
+            $jurusan = Jurusan::find($pendaftar->jurusan_id);
+            
+            if ($jurusan && $jurusan->kuota > 0 && !$jurusan->isQuotaAvailable()) {
+                return redirect()->back()->with('error', 'Kuota untuk jurusan ' . $jurusan->nama_jurusan . ' sudah penuh! Sisa kuota: ' . $jurusan->getAvailableQuota() . ' dari ' . $jurusan->kuota);
+            }
+        }
+
         $pendaftar->status_pendaftaran = $request->status_pendaftaran;
         $pendaftar->save();
 

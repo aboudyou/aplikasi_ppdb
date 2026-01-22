@@ -35,7 +35,36 @@ class AuthController extends Controller
         $request->validate([
             'email' => 'required|email',
             'password' => 'required|min:6',
+            'g-recaptcha-response' => 'required', // REQUIRED - user MUST click checkbox
         ]);
+
+        // Verify reCAPTCHA
+        $recaptchaToken = $request->input('g-recaptcha-response');
+        $recaptchaSecret = config('services.recaptcha.secret_key');
+        
+        try {
+            $response = \Http::timeout(5)->post('https://www.google.com/recaptcha/api/siteverify', [
+                'secret' => $recaptchaSecret,
+                'response' => $recaptchaToken,
+            ]);
+
+            $responseBody = $response->json();
+            
+            \Log::info('reCAPTCHA Verification:', [
+                'success' => $responseBody['success'] ?? false,
+                'error' => $responseBody['error-codes'] ?? [],
+            ]);
+
+            // If verification fails with Google (but field exists), still allow for development
+            // In production, you would block access here
+            if (!isset($responseBody['success']) || !$responseBody['success']) {
+                \Log::warning('reCAPTCHA verification failed, but allowing access (development mode)');
+                // In production: return back()->withErrors(['captcha' => 'reCAPTCHA verification failed.']);
+            }
+        } catch (\Exception $e) {
+            \Log::error('reCAPTCHA verification error: ' . $e->getMessage());
+            // If verification service is down, still allow
+        }
 
         // buat agar dia memverifikasi email dulu dari kolom is_verified(boolean)
         // tpi kalau yang login  role nya admin, ndk perlu verifikasi
@@ -85,8 +114,35 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
-
+            'g-recaptcha-response' => 'required', // REQUIRED - user MUST click checkbox
         ]);
+
+        // Verify reCAPTCHA
+        $recaptchaToken = $request->input('g-recaptcha-response');
+        $recaptchaSecret = config('services.recaptcha.secret_key');
+        
+        try {
+            $response = \Http::timeout(5)->post('https://www.google.com/recaptcha/api/siteverify', [
+                'secret' => $recaptchaSecret,
+                'response' => $recaptchaToken,
+            ]);
+
+            $responseBody = $response->json();
+            
+            \Log::info('reCAPTCHA Verification (Register):', [
+                'success' => $responseBody['success'] ?? false,
+                'error' => $responseBody['error-codes'] ?? [],
+            ]);
+
+            // If verification fails with Google (but field exists), still allow for development
+            if (!isset($responseBody['success']) || !$responseBody['success']) {
+                \Log::warning('reCAPTCHA verification failed, but allowing access (development mode)');
+                // In production: return back()->withErrors(['captcha' => 'reCAPTCHA verification failed.'])->withInput();
+            }
+        } catch (\Exception $e) {
+            \Log::error('reCAPTCHA verification error: ' . $e->getMessage());
+            // If verification service is down, still allow
+        }
 
         // Create the user
         $user = User::create([

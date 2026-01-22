@@ -12,18 +12,19 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            background: white;
-            color: #333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
         }
 
         .kuitansi-container {
-            width: 100%;
             max-width: 800px;
             margin: 0 auto;
+            background: white;
             padding: 40px;
             border: 2px solid #2c3e50;
-            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .header {
@@ -35,25 +36,14 @@
 
         .header h1 {
             color: #2c3e50;
-            font-size: 24px;
+            font-size: 28px;
             margin-bottom: 5px;
         }
 
         .header p {
             color: #666;
-            font-size: 12px;
+            font-size: 14px;
             margin: 3px 0;
-        }
-
-        .status-badge {
-            display: inline-block;
-            background: #27ae60;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            margin-top: 10px;
-            font-size: 12px;
         }
 
         .nomor-kuitansi {
@@ -67,32 +57,30 @@
         .nomor-kuitansi p {
             margin: 5px 0;
             color: #333;
-            font-size: 12px;
         }
 
         .nomor-kuitansi .nomor {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
             color: #2c3e50;
         }
 
         .section {
-            margin: 20px 0;
+            margin: 25px 0;
         }
 
         .section-title {
             background: #2c3e50;
             color: white;
-            padding: 10px 12px;
+            padding: 10px 15px;
             font-weight: bold;
             border-radius: 4px;
-            margin-bottom: 10px;
-            font-size: 13px;
+            margin-bottom: 15px;
         }
 
         .info-table {
             width: 100%;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .info-table tr {
@@ -100,14 +88,14 @@
         }
 
         .info-table td {
-            padding: 10px 0;
-            font-size: 12px;
+            padding: 12px 0;
         }
 
         .info-table .label {
             font-weight: bold;
             color: #333;
             width: 35%;
+            vertical-align: top;
         }
 
         .info-table .value {
@@ -118,7 +106,7 @@
         .detail-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 10px 0;
+            margin: 15px 0;
         }
 
         .detail-table thead {
@@ -126,18 +114,16 @@
         }
 
         .detail-table th {
-            padding: 10px;
+            padding: 12px;
             text-align: left;
             font-weight: bold;
             color: #2c3e50;
             border-bottom: 2px solid #bdc3c7;
-            font-size: 12px;
         }
 
         .detail-table td {
-            padding: 10px;
+            padding: 12px;
             border-bottom: 1px solid #ddd;
-            font-size: 12px;
         }
 
         .detail-table .text-right {
@@ -146,85 +132,113 @@
 
         .total-section {
             background: #ecf0f1;
-            padding: 12px;
+            padding: 15px;
             border-radius: 5px;
-            margin: 15px 0;
+            margin: 20px 0;
         }
 
         .total-row {
             display: flex;
             justify-content: space-between;
-            margin: 6px 0;
-            font-size: 12px;
+            margin: 8px 0;
+            font-size: 14px;
         }
 
         .total-row.final {
             border-top: 2px solid #2c3e50;
-            padding-top: 8px;
-            margin-top: 8px;
-            font-size: 14px;
+            padding-top: 10px;
+            margin-top: 10px;
+            font-size: 18px;
             font-weight: bold;
             color: #27ae60;
+        }
+
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .stamp {
+            text-align: right;
+            margin: 30px 0;
+            min-height: 80px;
+        }
+
+        .stamp p {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: #27ae60;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 10px 0;
         }
 
         .terbilang {
             background: #f9f9f9;
             padding: 10px;
             border-left: 3px solid #2c3e50;
-            margin: 12px 0;
+            margin: 15px 0;
             font-style: italic;
             color: #555;
-            font-size: 12px;
         }
 
-        .stamp {
-            text-align: right;
-            margin: 25px 0;
-            min-height: 70px;
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .kuitansi-container {
+                box-shadow: none;
+                border: 1px solid #999;
+            }
+
+            .print-button {
+                display: none;
+            }
         }
 
-        .stamp p {
-            font-size: 11px;
-            color: #666;
-            margin-bottom: 25px;
-        }
-
-        .signatures {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            margin-top: 30px;
+        .print-button {
             text-align: center;
+            margin: 20px 0;
         }
 
-        .signature-line p {
-            font-size: 11px;
-            color: #666;
-            margin-bottom: 50px;
+        .print-button button {
+            background: #2c3e50;
+            color: white;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
         }
 
-        .signature-line .name {
-            margin-top: 5px;
-            font-weight: bold;
-            font-size: 12px;
-        }
-
-        .footer {
-            margin-top: 20px;
-            text-align: center;
-            border-top: 1px solid #ddd;
-            padding-top: 15px;
-            font-size: 10px;
-            color: #999;
+        .print-button button:hover {
+            background: #1a252f;
         }
     </style>
 </head>
 <body>
+    <div class="print-button">
+        <button onclick="window.print()"><i class="bi bi-printer"></i> Cetak / Print Kuitansi</button>
+    </div>
+
     <div class="kuitansi-container">
         <!-- Header -->
         <div class="header">
-            <h1>KUITANSI PEMBAYARAN</h1>
-            <p>Penerimaan Peserta Didik Baru (PPDB)</p>
+            <h1>🧾 KUITANSI PEMBAYARAN</h1>
+            <p>PENERIMAAN PESERTA DIDIK BARU (PPDB)</p>
             <div class="status-badge">✓ PEMBAYARAN DITERIMA</div>
         </div>
 
@@ -232,12 +246,12 @@
         <div class="nomor-kuitansi">
             <p>NOMOR KUITANSI</p>
             <p class="nomor"><?php echo e($pembayaran->no_kuitansi ?? 'KUI-' . str_pad($pembayaran->id, 6, '0', STR_PAD_LEFT)); ?></p>
-            <p>Tanggal: <?php echo e($pembayaran->verified_at ? $pembayaran->verified_at->format('d F Y') : date('d F Y')); ?></p>
+            <p style="font-size: 12px; color: #999;">Tanggal: <?php echo e($pembayaran->verified_at ? $pembayaran->verified_at->format('d F Y') : date('d F Y')); ?></p>
         </div>
 
         <!-- Data Pembayar -->
         <div class="section">
-            <div class="section-title">DATA PEMBAYAR</div>
+            <div class="section-title">📋 DATA PEMBAYAR</div>
             <table class="info-table">
                 <tr>
                     <td class="label">Nama Lengkap</td>
@@ -252,7 +266,7 @@
                     <td class="value">: <?php echo e($pembayaran->formulir->nik ?? '-'); ?></td>
                 </tr>
                 <tr>
-                    <td class="label">Gelombang</td>
+                    <td class="label">Gelombang Pendaftaran</td>
                     <td class="value">: <?php echo e($pembayaran->gelombang->nama_gelombang ?? '-'); ?></td>
                 </tr>
             </table>
@@ -260,7 +274,7 @@
 
         <!-- Detail Pembayaran -->
         <div class="section">
-            <div class="section-title">DETAIL PEMBAYARAN</div>
+            <div class="section-title">💳 DETAIL PEMBAYARAN</div>
             <table class="detail-table">
                 <thead>
                     <tr>
@@ -300,7 +314,7 @@
 
         <!-- Informasi Pembayaran -->
         <div class="section">
-            <div class="section-title">INFORMASI PEMBAYARAN</div>
+            <div class="section-title">📅 INFORMASI PEMBAYARAN</div>
             <table class="info-table">
                 <tr>
                     <td class="label">Metode Pembayaran</td>
@@ -321,17 +335,32 @@
             </table>
         </div>
 
+        <!-- Catatan Admin -->
+        <?php if($pembayaran->catatan): ?>
+        <div class="section">
+            <div class="section-title">📝 CATATAN</div>
+            <p style="color: #555; line-height: 1.6;"><?php echo e($pembayaran->catatan); ?></p>
+        </div>
+        <?php endif; ?>
+
         <!-- Tanda Tangan -->
-        <div class="signatures">
-            <div class="signature-line">
-                <p>Pembayar</p>
-                <div style="height: 50px;"></div>
-                <div class="name"><?php echo e($pembayaran->formulir->nama_lengkap); ?></div>
-            </div>
-            <div class="signature-line">
-                <p>Admin Penerima</p>
-                <div style="height: 50px;"></div>
-                <div class="name"><?php echo e($pembayaran->adminVerifikasi->name ?? 'Admin PPDB'); ?></div>
+        <div class="section">
+            <div class="section-title">✍️ VERIFIKASI</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 30px;">
+                <div>
+                    <p style="text-align: center; margin-bottom: 60px; color: #666;">Pembayar</p>
+                    <p style="text-align: center; margin-top: 5px; font-weight: bold;">
+                        <?php echo e($pembayaran->formulir->nama_lengkap); ?>
+
+                    </p>
+                </div>
+                <div>
+                    <p style="text-align: center; margin-bottom: 60px; color: #666;">Admin Penerima</p>
+                    <p style="text-align: center; margin-top: 5px; font-weight: bold;">
+                        <?php echo e($pembayaran->adminVerifikasi->name ?? 'Admin PPDB'); ?>
+
+                    </p>
+                </div>
             </div>
         </div>
 
@@ -343,4 +372,4 @@
     </div>
 </body>
 </html>
-<?php /**PATH C:\Users\Lenovo\Documents\adi_ppdb\aplikasi_ppdb\resources\views/user/pembayaran/kuitansi-pdf.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\Users\Lenovo\Documents\adi_ppdb\aplikasi_ppdb\resources\views/user/pembayaran/kuitansi.blade.php ENDPATH**/ ?>

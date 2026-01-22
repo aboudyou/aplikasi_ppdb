@@ -24,21 +24,12 @@ class PembayaranController extends Controller
 
     public function store(Request $request)
     {
-        // Jika metode adalah Cash, bukti tidak wajib. Untuk metode lain, bukti wajib.
-        $metodeLower = strtolower($request->metode ?? '');
-        if (strpos($metodeLower, 'cash') !== false) {
-            $rules = [
-                'metode' => 'required',
-                'bukti' => 'nullable|image|max:2048',
-            ];
-        } else {
-            $rules = [
-                'metode' => 'required',
-                'bukti' => 'required|image|max:2048',
-            ];
-        }
+        // Metode pembayaran hanya Transfer Bank, bukti wajib
+        $request->validate([
+            'metode' => 'required',
+            'bukti' => 'required|image|max:2048',
+        ]);
 
-        $request->validate($rules);
         // Pastikan formulir/biodata sudah diisi
         $formulir = FormulirPendaftaran::where('user_id', Auth::id())->first();
         if (!$formulir) {
@@ -52,25 +43,9 @@ class PembayaranController extends Controller
             $file->move(public_path('uploads/pembayaran'), $namaFile);
         }
 
-        // Map metode input to DB enum values
-        $metodeInput = strtolower($request->metode);
-        // Map metode input to DB enum values and decide status
-        if (strpos($metodeInput, 'transfer') !== false) {
-            $metodeDb = 'Transfer Bank';
-            $status = 'Menunggu';
-        } elseif (strpos($metodeInput, 'qris') !== false || strpos($metodeInput, 'ewallet') !== false) {
-            $metodeDb = 'E-Wallet';
-            $status = 'Menunggu';
-        } elseif (strpos($metodeInput, 'cash') !== false) {
-            // Untuk pembayaran tunai (cash) anggap langsung lunas (admin tidak perlu verifikasi bukti)
-            // Karena enum tidak punya 'Cash', simpan sebagai 'VA' untuk kompatibilitas schema
-            $metodeDb = 'VA';
-            $status = 'Lunas';
-        } else {
-            // fallback
-            $metodeDb = 'VA';
-            $status = 'Menunggu';
-        }
+        // Metode hanya Transfer Bank
+        $metodeDb = 'Transfer Bank';
+        $status = 'Menunggu';
 
         Pembayaran::updateOrCreate(
             ['formulir_id' => $formulir->id],

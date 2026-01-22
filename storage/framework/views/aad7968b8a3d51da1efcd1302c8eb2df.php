@@ -1,27 +1,25 @@
-@extends('layouts.auth')
+<?php $__env->startSection('title', 'Register Page'); ?>
 
-@section('title', 'Register Page')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <div class="card my-5">
-        <form action="{{ route('register') }}" method="POST">
-            @csrf
+        <form action="<?php echo e(route('register')); ?>" method="POST">
+            <?php echo csrf_field(); ?>
 
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-end mb-4">
                     <h3 class="mb-0"><b>Sign up</b></h3>
                     <a href="/login" class="link-primary">Already have an account?</a>
                 </div>
-                @if ($errors->any())
+                <?php if($errors->any()): ?>
                     <div class="alert alert-danger">
 
-                        @foreach ($errors->all() as $error)
-                            <div>{{ $error }}</div>
-                        @endforeach
+                        <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <div><?php echo e($error); ?></div>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
                     </div>
 
-                @endif
+                <?php endif; ?>
                 <div class="form-group mb-3">
                     <label class="form-label">Nama Lengkap</label>
                     <input type="text" class="form-control" required name="name" placeholder="Nama Lengkap"
@@ -44,10 +42,8 @@
                 </div>
 
                 <div class="form-group mb-3">
-                    <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
-                    @error('g-recaptcha-response')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
+                    <div class="g-recaptcha" data-sitekey="<?php echo e(config('services.recaptcha.site_key')); ?>"></div>
+                    
                 </div>
 
                 <p class="mt-4 text-sm text-muted">By Signing up, you agree to our <a href="#" class="text-primary">
@@ -59,10 +55,12 @@
                 <div class="saprator mt-3">
                     <span>Sign up with</span>
                 </div>
-                @include('auth.sso')
+                <?php echo $__env->make('auth.sso', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
             </div>
 
         </form>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.auth', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Lenovo\Documents\adi_ppdb\aplikasi_ppdb\resources\views/auth/register.blade.php ENDPATH**/ ?>

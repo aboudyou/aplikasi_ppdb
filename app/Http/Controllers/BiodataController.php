@@ -8,6 +8,7 @@ use App\Models\GelombangPendaftaran;
 use App\Models\FormulirPendaftaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class BiodataController extends Controller
 {
@@ -38,88 +39,79 @@ class BiodataController extends Controller
     {
         $biodata = FormulirPendaftaran::where('user_id', Auth::id())->first();
         
-        $request->validate([
-            'nama_lengkap' => 'required|string|max:100|regex:/^[a-zA-Z\s]+$/',
-            'nisn' => 'required|numeric|digits:10|unique:formulir_pendaftaran,nisn,' . ($biodata?->id ?? 'NULL'),
-            'nik' => 'required|numeric|digits:16|unique:formulir_pendaftaran,nik,' . ($biodata?->id ?? 'NULL'),
-            'tempat_lahir' => 'required|string|max:100|regex:/^[a-zA-Z\s]+$/',
-            'tanggal_lahir' => 'required|date|before:today|after:1990-01-01',
+        // Jika biodata tidak ada, buat baru
+        if (!$biodata) {
+            return redirect()->route('user.biodata')->with('error', 'Silakan isi biodata terlebih dahulu.');
+        }
+        
+        // Validasi data yang lebih sederhana
+        $validated = $request->validate([
+            'nama_lengkap' => 'required|string|max:100',
+            'nisn' => 'required|digits:10|unique:formulir_pendaftaran,nisn,' . $biodata->id,
+            'nik' => 'required|digits:16|unique:formulir_pendaftaran,nik,' . $biodata->id,
+            'tempat_lahir' => 'required|string|max:100',
+            'tanggal_lahir' => 'required|date|before:today',
             'jenis_kelamin' => 'required|in:L,P',
             'agama' => 'required|in:Islam,Kristen,Katolik,Hindu,Buddha,Konghucu',
             'tinggi_badan' => 'nullable|numeric|min:50|max:250',
             'berat_badan' => 'nullable|numeric|min:20|max:200',
             'asal_sekolah' => 'required|string|max:100',
-            'anak_ke' => 'nullable|numeric|min:1|max:20',
+            'anak_ke' => 'nullable|integer|min:1|max:20',
             'alamat' => 'required|string|min:5|max:255',
-            'no_hp' => 'nullable|numeric|digits_between:10,13',
+            'no_hp' => 'nullable|digits_between:10,13',
             'jurusan_id' => 'required|exists:jurusan,id',
             'gelombang_id' => 'required|exists:gelombang_pendaftaran,id',
-            'kelurahan' => 'required_without:desa|string',
-            'desa' => 'required_without:kelurahan|string',
+            'kecamatan' => 'required|string|max:100',
+            'kota' => 'required|string|max:100',
+            'kelurahan' => 'nullable|string|max:100',
+            'desa' => 'nullable|string|max:100',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        ], [
-            'nama_lengkap.regex' => 'Nama Lengkap hanya boleh berisi huruf dan spasi (tidak boleh angka atau simbol)',
-            'nisn.numeric' => 'NISN harus berisi angka saja (tidak boleh huruf)',
-            'nisn.digits' => 'NISN harus terdiri dari 10 angka',
-            'nisn.unique' => 'NISN sudah terdaftar di sistem',
-            'nik.numeric' => 'NIK harus berisi angka saja (tidak boleh huruf)',
-            'nik.digits' => 'NIK harus terdiri dari 16 angka',
-            'nik.unique' => 'NIK sudah terdaftar di sistem',
-            'tempat_lahir.regex' => 'Tempat Lahir hanya boleh berisi huruf dan spasi',
-            'tanggal_lahir.before' => 'Tanggal Lahir tidak boleh di masa depan',
-            'tanggal_lahir.after' => 'Tanggal Lahir tidak valid (terlalu jauh ke belakang)',
-            'agama.in' => 'Agama harus dipilih dari daftar yang tersedia',
-            'tinggi_badan.min' => 'Tinggi Badan minimal 50 cm',
-            'tinggi_badan.max' => 'Tinggi Badan maksimal 250 cm',
-            'berat_badan.min' => 'Berat Badan minimal 20 kg',
-            'berat_badan.max' => 'Berat Badan maksimal 200 kg',
-            'alamat.min' => 'Alamat Lengkap minimal 5 karakter',
-            'alamat.max' => 'Alamat Lengkap maksimal 255 karakter',
-            'no_hp.numeric' => 'Nomor HP harus berisi angka saja',
-            'no_hp.digits_between' => 'Nomor HP harus antara 10-13 digit',
         ]);
 
-        $jenisKelamin = $request->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan';
+        // Konversi jenis kelamin
+        $validated['jenis_kelamin'] = $request->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan';
 
-        $kelurahan = $request->kelurahan ?? $request->desa ?? null;
-
-        $data = [
-            'nama_lengkap' => $request->nama_lengkap,
-            'nisn' => $request->nisn,
-            'nik' => $request->nik,
-            'tempat_lahir' => $request->tempat_lahir,
-            'tanggal_lahir' => $request->tanggal_lahir,
-            'jenis_kelamin' => $jenisKelamin,
-            'agama' => $request->agama,
-            'tinggi_badan' => $request->tinggi_badan,
-            'berat_badan' => $request->berat_badan,
-            'asal_sekolah' => $request->asal_sekolah,
-            'anak_ke' => $request->anak_ke,
-            'alamat' => $request->alamat,
-            'kelurahan_desa' => $kelurahan,
-            'kecamatan' => $request->kecamatan,
-            'kota' => $request->kota,
-            'no_hp' => $request->no_hp,
-            'jurusan_id' => $request->jurusan_id,
-            'gelombang_id' => $request->gelombang_id,
-        ];
+        // Set kelurahan_desa
+        $validated['kelurahan_desa'] = $request->kelurahan ?? $request->desa ?? null;
+        unset($validated['kelurahan']);
+        unset($validated['desa']);
 
         // Handle foto upload
         if ($request->hasFile('foto')) {
-            $biodata = FormulirPendaftaran::where('user_id', Auth::id())->first();
-            
             // Delete old foto if exists
-            if ($biodata && $biodata->foto && \Storage::disk('public')->exists($biodata->foto)) {
-                \Storage::disk('public')->delete($biodata->foto);
+            if ($biodata->foto && Storage::disk('public')->exists($biodata->foto)) {
+                Storage::disk('public')->delete($biodata->foto);
             }
 
             // Upload new foto
             $fotoPath = $request->file('foto')->store('photos', 'public');
-            $data['foto'] = $fotoPath;
+            $validated['foto'] = $fotoPath;
         }
 
-        FormulirPendaftaran::where('user_id', Auth::id())->update($data);
+        // Update biodata
+        $biodata->update($validated);
 
         return redirect()->route('user.profile.index')->with('success', 'Profil berhasil diperbarui!');
     }
+
+    // Hapus biodata dan isi ulang
+    public function destroy()
+    {
+        $biodata = FormulirPendaftaran::where('user_id', Auth::id())->first();
+        
+        if (!$biodata) {
+            return redirect()->route('user.biodata')->with('error', 'Data biodata tidak ditemukan.');
+        }
+
+        // Delete foto jika ada
+        if ($biodata->foto && Storage::disk('public')->exists($biodata->foto)) {
+            Storage::disk('public')->delete($biodata->foto);
+        }
+
+        // Delete biodata
+        $biodata->delete();
+
+        return redirect()->route('user.biodata')->with('success', 'Biodata berhasil dihapus. Silakan isi kembali data Anda.');
+    }
 }
+

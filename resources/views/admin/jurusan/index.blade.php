@@ -36,6 +36,9 @@
                         <tr>
                             <th>ID</th>
                             <th>Nama Jurusan</th>
+                            <th>Kuota</th>
+                            <th>Diterima</th>
+                            <th>Sisa Kuota</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -44,6 +47,27 @@
                             <tr>
                                 <td>{{ $j->id }}</td>
                                 <td>{{ $j->nama_jurusan }}</td>
+                                <td>
+                                    @if($j->kuota > 0)
+                                        <span class="badge bg-info">{{ $j->kuota }}</span>
+                                    @else
+                                        <span class="badge bg-secondary">Tanpa Batas</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning">{{ $j->getAcceptedCount() }}</span>
+                                </td>
+                                <td>
+                                    @if($j->kuota > 0)
+                                        @if($j->getAvailableQuota() > 0)
+                                            <span class="badge bg-success">{{ $j->getAvailableQuota() }}</span>
+                                        @else
+                                            <span class="badge bg-danger">0 (Penuh)</span>
+                                        @endif
+                                    @else
+                                        <span class="badge bg-secondary">-</span>
+                                    @endif
+                                </td>
                                 <td>
                                     <a href="{{ route('admin.jurusan.edit', $j->id) }}" class="btn btn-sm btn-warning" style="width: 70px;">Edit</a>
                                     <form action="{{ route('admin.jurusan.destroy', $j->id) }}" method="POST" style="display:inline;">
@@ -55,7 +79,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="3" class="text-center">Belum ada jurusan.</td>
+                                <td colspan="6" class="text-center">Belum ada jurusan.</td>
                             </tr>
                         @endforelse
                     </tbody>

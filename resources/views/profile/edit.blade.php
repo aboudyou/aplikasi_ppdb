@@ -101,8 +101,15 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Agama *</label>
-                                    <input type="text" name="agama" class="form-control" 
-                                        value="{{ old('agama', $biodata->agama) }}" required>
+                                    <select name="agama" class="form-select" required>
+                                        <option value="">-- Pilih Agama --</option>
+                                        <option value="Islam" {{ old('agama', $biodata->agama) === 'Islam' ? 'selected' : '' }}>Islam</option>
+                                        <option value="Kristen" {{ old('agama', $biodata->agama) === 'Kristen' ? 'selected' : '' }}>Kristen</option>
+                                        <option value="Katolik" {{ old('agama', $biodata->agama) === 'Katolik' ? 'selected' : '' }}>Katolik</option>
+                                        <option value="Hindu" {{ old('agama', $biodata->agama) === 'Hindu' ? 'selected' : '' }}>Hindu</option>
+                                        <option value="Buddha" {{ old('agama', $biodata->agama) === 'Buddha' ? 'selected' : '' }}>Buddha</option>
+                                        <option value="Konghucu" {{ old('agama', $biodata->agama) === 'Konghucu' ? 'selected' : '' }}>Konghucu</option>
+                                    </select>
                                 </div>
                             </div>
 
@@ -205,6 +212,15 @@
                                 </a>
                             </div>
                         </form>
+
+                        <!-- Tombol Hapus Biodata -->
+                        <div class="alert alert-danger mt-4">
+                            <h6 class="alert-heading">⚠️ Danger Zone</h6>
+                            <p class="mb-3">Hapus semua biodata Anda jika ada kesalahan data dan ingin mengisinya kembali dari awal.</p>
+                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                <i class="bi bi-trash"></i> Hapus & Isi Ulang Biodata
+                            </button>
+                        </div>
                     @else
                         <div class="alert alert-warning">
                             <i class="bi bi-exclamation-triangle"></i> Data biodata tidak ditemukan. 
@@ -212,6 +228,35 @@
                         </div>
                     @endif
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Konfirmasi Hapus -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-danger">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle"></i> Hapus Biodata?
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2"><strong>Perhatian!</strong></p>
+                <p class="mb-2">Anda akan menghapus semua data biodata Anda. Tindakan ini tidak dapat dibatalkan.</p>
+                <p class="mb-0 text-danger"><strong>Apakah Anda yakin ingin melanjutkan?</strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <form action="{{ route('user.profile.destroy') }}" method="POST" style="display: inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Ya, Hapus Biodata
+                    </button>
+                </form>
             </div>
         </div>
     </div>

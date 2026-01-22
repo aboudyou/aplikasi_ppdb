@@ -64,6 +64,13 @@
                             <label class="form-check-label" for="remember">Ingat saya</label>
                         </div>
 
+                        <div class="mb-3">
+                            <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') ?? 'KEY_NOT_FOUND' }}"></div>
+                            @error('g-recaptcha-response')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+
                         <button type="submit" class="btn btn-primary w-100 mb-3">Masuk</button>
                     </form>
 

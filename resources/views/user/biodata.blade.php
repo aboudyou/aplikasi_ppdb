@@ -246,15 +246,16 @@
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label">Pilih Jurusan <span class="text-danger">*</span></label>
-                <select name="jurusan_id" class="form-control @error('jurusan_id') is-invalid @enderror" required>
+                <select name="jurusan_id" class="form-control @error('jurusan_id') is-invalid @enderror" id="jurusanSelectBiodata" required>
                     <option value="">-- Pilih Jurusan --</option>
                     @foreach($jurusan as $j)
-                        <option value="{{ $j->id }}" {{ old('jurusan_id') == $j->id ? 'selected' : '' }}>{{ $j->nama_jurusan }}</option>
+                        <option value="{{ $j->id }}" data-kuota="{{ $j->kuota }}" data-accepted="{{ $j->getAcceptedCount() }}" {{ old('jurusan_id') == $j->id ? 'selected' : '' }}>{{ $j->nama_jurusan }}</option>
                     @endforeach
                 </select>
                 @error('jurusan_id')
                     <div class="invalid-feedback d-block"><i class="bi bi-exclamation-circle"></i> {{ $message }}</div>
                 @enderror
+                <small class="text-muted d-block mt-2" id="kuotaInfoBiodata"></small>
             </div>
 
             <div class="col-md-6 mb-3">
@@ -368,16 +369,115 @@
                     <a href="{{ route('user.dashboard') }}" class="btn btn-success">
                         <i class="bi bi-check"></i> Lanjut ke Step Berikutnya
                     </a>
-                    <a href="{{ route('user.profile.edit') }}" class="btn btn-warning">
-                        <i class="bi bi-pencil"></i> Edit Data
+                    <a href="{{ route('user.biodata.step1') }}" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> Edit Data Diri
+                    </a>
+                    <a href="{{ route('user.biodata.step2') }}" class="btn btn-info">
+                        <i class="bi bi-pencil"></i> Edit Alamat & Jurusan
                     </a>
                     <a href="{{ route('user.profile.index') }}" class="btn btn-outline-primary">
                         <i class="bi bi-eye"></i> Lihat Profil Lengkap
                     </a>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        <i class="bi bi-trash"></i> Hapus & Isi Ulang
+                    </button>
                 </div>
             </div>
         </div>
     @endunless
 </div>
 
+<!-- Modal Konfirmasi Hapus -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-danger">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle"></i> Hapus Biodata?
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2"><strong>Perhatian!</strong></p>
+                <p class="mb-2">Anda akan menghapus semua data biodata Anda. Tindakan ini tidak dapat dibatalkan.</p>
+                <p class="mb-2">Setelah dihapus, Anda dapat mengisinya kembali dari awal dengan data yang benar.</p>
+                <p class="mb-0 text-danger"><strong>Apakah Anda yakin ingin melanjutkan?</strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <form action="{{ route('user.profile.destroy') }}" method="POST" style="display: inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Ya, Hapus Biodata
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const jurusanSelect = document.getElementById('jurusanSelectBiodata');
+    const kuotaInfo = document.getElementById('kuotaInfoBiodata');
+
+    if (!jurusanSelect) return;
+
+    function updateKuotaInfo() {
+        const selectedOption = jurusanSelect.options[jurusanSelect.selectedIndex];
+        
+        if (!selectedOption.value) {
+            kuotaInfo.innerHTML = '';
+            return;
+        }
+
+        const kuota = parseInt(selectedOption.dataset.kuota);
+        const accepted = parseInt(selectedOption.dataset.accepted);
+        const jurusanName = selectedOption.text;
+
+        let html = '';
+
+        if (kuota <= 0) {
+            // Tidak ada batasan kuota
+            html = `<i class="bi bi-info-circle"></i> <strong>${jurusanName}</strong> tidak memiliki batasan kuota`;
+        } else {
+            const remaining = kuota - accepted;
+            const percentage = (accepted / kuota) * 100;
+
+            if (remaining > 0) {
+                // Kuota masih tersedia
+                html = `
+                    <div class="mb-2">
+                        <i class="bi bi-check-circle-fill text-success"></i> 
+                        <strong>Kuota Tersedia!</strong> 
+                        Sisa kuota: <strong>${remaining} dari ${kuota}</strong>
+                    </div>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: ${100 - percentage}%" aria-valuenow="${100 - percentage}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                `;
+            } else {
+                // Kuota penuh
+                html = `
+                    <div class="alert alert-warning mb-2 py-2 px-3">
+                        <i class="bi bi-exclamation-triangle-fill"></i> 
+                        <strong>Kuota Penuh!</strong> 
+                        Jurusan <strong>${jurusanName}</strong> sudah mencapai batas penerimaan (${kuota}/${kuota})
+                    </div>
+                `;
+            }
+        }
+
+        kuotaInfo.innerHTML = html;
+    }
+
+    // Trigger saat page load jika ada nilai selected
+    updateKuotaInfo();
+
+    // Trigger saat user memilih jurusan
+    jurusanSelect.addEventListener('change', updateKuotaInfo);
+});
+</script>
+@endsection
 @endsection

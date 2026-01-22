@@ -224,6 +224,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/profile', [BiodataController::class, 'index'])->name('profile.index');
             Route::get('/profile/edit', [BiodataController::class, 'edit'])->name('profile.edit');
             Route::put('/profile', [BiodataController::class, 'update'])->name('profile.update');
+            Route::delete('/profile/biodata', [BiodataController::class, 'destroy'])->name('profile.destroy');
 
             // FORMULIR
             Route::resource('/formulir', FormulirController::class);

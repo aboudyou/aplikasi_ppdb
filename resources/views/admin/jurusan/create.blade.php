@@ -21,6 +21,16 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+
+                        <div class="form-group mb-3">
+                            <label for="kuota" class="form-label">Kuota</label>
+                            <input type="number" class="form-control @error('kuota') is-invalid @enderror" id="kuota" name="kuota" value="{{ old('kuota', 0) }}" min="0" required>
+                            <small class="text-muted">Masukkan 0 jika tidak ada batasan kuota</small>
+                            @error('kuota')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <button type="submit" class="btn btn-primary">Simpan</button>
                     </form>
                 </div>

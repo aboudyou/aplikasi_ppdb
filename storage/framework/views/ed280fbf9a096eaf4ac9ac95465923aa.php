@@ -139,6 +139,9 @@
 
         <?php echo $__env->yieldContent('scripts_content'); ?>
 
+        <!-- reCAPTCHA Script -->
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
     </body>
     <!-- [Body] end -->
 

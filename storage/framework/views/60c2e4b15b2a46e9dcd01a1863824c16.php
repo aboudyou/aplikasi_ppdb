@@ -36,6 +36,9 @@
                         <tr>
                             <th>ID</th>
                             <th>Nama Jurusan</th>
+                            <th>Kuota</th>
+                            <th>Diterima</th>
+                            <th>Sisa Kuota</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -44,6 +47,27 @@
                             <tr>
                                 <td><?php echo e($j->id); ?></td>
                                 <td><?php echo e($j->nama_jurusan); ?></td>
+                                <td>
+                                    <?php if($j->kuota > 0): ?>
+                                        <span class="badge bg-info"><?php echo e($j->kuota); ?></span>
+                                    <?php else: ?>
+                                        <span class="badge bg-secondary">Tanpa Batas</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning"><?php echo e($j->getAcceptedCount()); ?></span>
+                                </td>
+                                <td>
+                                    <?php if($j->kuota > 0): ?>
+                                        <?php if($j->getAvailableQuota() > 0): ?>
+                                            <span class="badge bg-success"><?php echo e($j->getAvailableQuota()); ?></span>
+                                        <?php else: ?>
+                                            <span class="badge bg-danger">0 (Penuh)</span>
+                                        <?php endif; ?>
+                                    <?php else: ?>
+                                        <span class="badge bg-secondary">-</span>
+                                    <?php endif; ?>
+                                </td>
                                 <td>
                                     <a href="<?php echo e(route('admin.jurusan.edit', $j->id)); ?>" class="btn btn-sm btn-warning" style="width: 70px;">Edit</a>
                                     <form action="<?php echo e(route('admin.jurusan.destroy', $j->id)); ?>" method="POST" style="display:inline;">
@@ -55,7 +79,7 @@
                             </tr>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                             <tr>
-                                <td colspan="3" class="text-center">Belum ada jurusan.</td>
+                                <td colspan="6" class="text-center">Belum ada jurusan.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
